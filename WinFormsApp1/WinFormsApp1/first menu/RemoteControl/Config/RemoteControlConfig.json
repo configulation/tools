@@ -1,0 +1,83 @@
+{
+  "RemoteControl": {
+    "Network": {
+      "DefaultPort": 8888,
+      "MaxConnections": 5,
+      "ConnectionTimeout": 30000,
+      "HeartbeatInterval": 5000,
+      "BufferSize": 4096,
+      "EnableEncryption": false,
+      "EnableCompression": true
+    },
+    "Screen": {
+      "DefaultQuality": 70,
+      "MinQuality": 10,
+      "MaxQuality": 100,
+      "DefaultFPS": 30,
+      "MinFPS": 5,
+      "MaxFPS": 60,
+      "CaptureMode": "FullScreen",
+      "EnableHardwareAcceleration": true,
+      "EnableDifferentialUpdate": false,
+      "CompressionFormat": "JPEG"
+    },
+    "Security": {
+      "DeviceCodeLength": 6,
+      "DeviceCodeExpiration": 300,
+      "AllowAutoConnect": false,
+      "RequirePassword": false,
+      "MaxFailedAttempts": 3,
+      "BlockDuration": 60
+    },
+    "UI": {
+      "Theme": "SunnyUI",
+      "Language": "zh-CN",
+      "ShowConnectionLog": true,
+      "ShowPerformanceStats": false,
+      "AutoHideControls": false,
+      "FullScreenMode": false,
+      "DefaultWindowSize": {
+        "Width": 1200,
+        "Height": 650
+      },
+      "MinWindowSize": {
+        "Width": 800,
+        "Height": 600
+      }
+    },
+    "Performance": {
+      "CpuThrottling": false,
+      "MaxCpuUsage": 80,
+      "MaxMemoryUsage": 1024,
+      "EnableGpuAcceleration": true,
+      "AdaptiveQuality": false,
+      "NetworkOptimization": true
+    },
+    "Features": {
+      "EnableFileTransfer": false,
+      "EnableClipboardSync": true,
+      "EnableAudioStream": false,
+      "EnableMultiMonitor": false,
+      "EnableRemotePrint": false,
+      "EnableDragDrop": true
+    },
+    "Logging": {
+      "EnableLogging": true,
+      "LogLevel": "Info",
+      "LogPath": "./logs",
+      "MaxLogSize": 10,
+      "MaxLogFiles": 10,
+      "LogFormat": "yyyy-MM-dd HH:mm:ss"
+    },
+    "Advanced": {
+      "UseP2P": false,
+      "UseRelay": false,
+      "RelayServer": "",
+      "StunServer": "stun.l.google.com:19302",
+      "TurnServer": "",
+      "NatTraversal": false,
+      "PortForwarding": false,
+      "UPnP": false
+    }
+  }
+}

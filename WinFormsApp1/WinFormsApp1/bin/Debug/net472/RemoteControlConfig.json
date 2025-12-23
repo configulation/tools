@@ -1,0 +1,27 @@
+{
+  "RemoteControl": {
+    "Network": {
+      "DefaultPort": 8888,
+      "MaxConnections": 5,
+      "ConnectionTimeout": 30000,
+      "HeartbeatInterval": 5000,
+      "BufferSize": 4096
+    },
+    "Screen": {
+      "DefaultQuality": 70,
+      "MinQuality": 10,
+      "MaxQuality": 100,
+      "DefaultFPS": 30,
+      "MinFPS": 5,
+      "MaxFPS": 60
+    },
+    "Security": {
+      "DeviceCodeLength": 6,
+      "DeviceCodeExpiration": 300
+    },
+    "Advanced": {
+      "UseRelay": true,
+      "RelayServer": "124.23.183.141:9000"
+    }
+  }
+}

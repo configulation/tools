@@ -1,0 +1,24 @@
+===========================================
+安装 Tesseract OCR 识别库（真正靠谱的方案）
+===========================================
+
+在 NuGet 包管理器控制台运行：
+
+Install-Package Tesseract -Version 5.2.0
+
+或者在 NuGet 包管理器界面搜索：
+Tesseract
+
+作者：Tesseract
+下载量：500万+
+
+===========================================
+下载中文语言包
+===========================================
+
+访问：https://github.com/tesseract-ocr/tessdata/raw/main/chi_sim.traineddata
+
+下载后放到项目目录：
+tessdata/chi_sim.traineddata
+
+===========================================

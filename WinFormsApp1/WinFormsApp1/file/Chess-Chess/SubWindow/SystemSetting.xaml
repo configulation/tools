@@ -1,0 +1,57 @@
+﻿<Window x:Class="Chess.SubWindow.SystemSetting"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Chess.SubWindow"
+        xmlns:Chess="clr-namespace:Chess" xmlns:CustomClass="clr-namespace:Chess.CustomClass" 
+        mc:Ignorable="d"
+        Title="设置" Height="500" Width="630" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Loaded="OnWindowLoaded" Unloaded="OnWindowUnloaded">
+    <Grid>
+        <StackPanel Style="{DynamicResource setupWindowBackground}">
+            <StackPanel.DataContext>
+                <Chess:Settings/>
+            </StackPanel.DataContext>
+            <StackPanel Orientation="Horizontal" Margin="20,20,0,0">
+                <TextBlock HorizontalAlignment="Left" Text="自动走棋时间间隔（毫秒）：" Foreground="White" VerticalAlignment="Bottom" FontSize="14"/>
+                <Slider x:Name="MoveDelayTime" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="300" AutoToolTipPlacement="TopLeft" Maximum="2000" SmallChange="100" LargeChange="100" TickFrequency="100" TickPlacement="TopLeft" Value="{Binding Default.MoveDelayTime}" Foreground="#FFD4D4D3" ToolTip="走棋间隔时间（毫秒）。" IsSnapToTickEnabled="True" Margin="20,0,0,0" Minimum="100" />
+                <TextBox Width="50" Margin="30,0,0,0" VerticalAlignment="Bottom" MaxLines="1" TextAlignment="Center" Text="{Binding Value, ElementName=MoveDelayTime}" IsEnabled="False" Foreground="Black" FontWeight="Bold" FontSize="14"/>
+            </StackPanel>
+            <CheckBox x:Name="Sound" Content="走棋声音" Background="White" Foreground="White" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,10,0,0" IsChecked="{Binding Default.EnableSound}" />
+            <CheckBox x:Name="ArrowsShowOrHidden" Content="显示下一个着法的提示箭头" Background="White" Foreground="White" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,10,0,0" IsChecked="{Binding Default.ArrowVisable}" />
+            <StackPanel Orientation="Horizontal" Margin="20,0,20,0">
+                <TextBlock Text="提示箭头显示个数：" Foreground="White" VerticalAlignment="Bottom" FontSize="14"/>
+                <Slider x:Name="ArrowMaxNumSlider" HorizontalAlignment="Left" VerticalAlignment="Center" Width="300" AutoToolTipPlacement="TopLeft" Maximum="8" SmallChange="1" TickPlacement="TopLeft" Value="{Binding Default.ArrowsMaxNum}" Foreground="#FFD4D4D3" ToolTip="提示箭头显示个数。" IsSnapToTickEnabled="True" Margin="77,0,0,0" Minimum="1" />
+                <TextBox Width="50" Margin="30,0,0,0" VerticalAlignment="Bottom" MaxLines="1" TextAlignment="Center" Text="{Binding Value, ElementName=ArrowMaxNumSlider}" IsEnabled="False" Foreground="Black" Background="White" FontWeight="Bold" FontSize="14"/>
+            </StackPanel>
+            <CheckBox Content="显示着法评分和备注信息框（信息框在提示箭头位置）" Background="White" Foreground="White" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,10,0,0" IsChecked="{Binding Default.ArrowsMemo}" />
+            <CheckBox Content="显示走棋路径点" Background="White" Foreground="White" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,10,0,0" IsChecked="{Binding Default.EnablePathPoint}" />
+            <StackPanel Orientation="Horizontal" Margin="20,10,0,0">
+                <TextBlock Text="窗口背景图片：" Foreground="White" VerticalAlignment="Center" FontSize="14"/>
+                <TextBox Width="294" Margin="80,0,0,0" IsEnabled="False" TextAlignment="Left" Text="{Binding Default.mainBKImage}" TextChanged="OnTextChanged" FontSize="14"/>
+                <Button Content="另选" Margin="10,0,0,0" Width="50" Click="SelectBKImage"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="20,10,0,0">
+                <TextBlock Text="更换主题：" Foreground="White" FontSize="14"/>
+                <ComboBox x:Name="thems_combox" Width="200" Margin="109,0,0,0" SelectedIndex="{Binding Default.ThemsIndex}" SelectionChanged="ThemsChangeed" FontSize="14">
+                    <ComboBoxItem Content="橙色_半透明"/>
+                    <ComboBoxItem Content="绿色_半透明"/>
+                    <ComboBoxItem Content="蓝色_半透明"/>
+                    <ComboBoxItem Content="紫色_半透明"/>
+                    <ComboBoxItem Content="灰色_半透明"/>
+                    <ComboBoxItem Content="中国红"/>
+                    <ComboBoxItem Content="墨绿色"/>
+                    <ComboBoxItem Content="皇家紫"/>
+                    <ComboBoxItem Content="深色木纹"/>
+                    <ComboBoxItem Content="浅色木纹"/>
+                </ComboBox>
+            </StackPanel>
+            <Grid Height="210" Margin="0,10,0,0">
+                <Grid x:Name="DongHuaGrid" Width="210" Height="210" HorizontalAlignment="Center" VerticalAlignment="Center" Panel.ZIndex="10"></Grid>
+                <Image Source="/picture/Resource/黑将.png" VerticalAlignment="Center" IsEnabled="False" Stretch="Fill" HorizontalAlignment="Center" Margin="0,10,5,0" Width="100" Height="100"/>
+            </Grid>
+        </StackPanel>
+        <Button Content="打开颜色窗口" HorizontalAlignment="Center" Padding="5,1,5,1" VerticalAlignment="Bottom" Margin="0,0,0,10" Click="OpenColorWindow"/>
+
+    </Grid>
+</Window>

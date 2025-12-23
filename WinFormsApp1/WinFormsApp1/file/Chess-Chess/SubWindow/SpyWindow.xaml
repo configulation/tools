@@ -1,0 +1,18 @@
+﻿<Window x:Class="Chess.SpyWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Chess"
+        mc:Ignorable="d"
+        Title="SpyWindow" Height="350" Width="400" Loaded="OnWindowLoaded" Icon="/picture/象128.png">
+    <Grid>
+        <DataGrid x:Name="SpyQipan" VerticalAlignment="Top">
+            <DataGrid.CellStyle>
+                <Style/>
+            </DataGrid.CellStyle>
+        </DataGrid>
+        <Button Style="{StaticResource button}" Content="刷新" HorizontalAlignment="Center" VerticalAlignment="Bottom" Height="25" Width="60" Margin="0,0,0,22" Click="DataRefresh"/>
+
+    </Grid>
+</Window>

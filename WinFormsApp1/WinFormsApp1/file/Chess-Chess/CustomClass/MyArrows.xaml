@@ -1,0 +1,19 @@
+﻿<UserControl x:Class="Chess.CustomClass.MyArrows"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Chess.CustomClass"
+             mc:Ignorable="d" 
+             d:DesignHeight="200" d:DesignWidth="300" IsHitTestVisible="False" IsVisibleChanged="IsArrowVisibleChanged" IsEnabled="False">
+    <Grid>
+        <Path x:Name="arrowPath" Style="{DynamicResource myPath}" HorizontalAlignment="Left" VerticalAlignment="Top" Opacity="0.8"/>
+        <Grid x:Name="arrowEllipsGrid" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <Ellipse x:Name="arrowEllipse" HorizontalAlignment="Center" VerticalAlignment="Center" Width="20" Height="20" Stroke="ForestGreen" Fill="GreenYellow" Opacity="0.8"/>
+            <TextBlock x:Name="arrowNumber" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" Text="2"/>
+        </Grid>
+        <Border x:Name="arrowPromptBorder" MinWidth="50" MaxWidth="300" Background="#4CFDF52F" BorderThickness="1,1,1,1" BorderBrush="#FF211F0C" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <TextBlock x:Name="arrowPrompt" d:Text="测试测试。" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="5,3,5,5" FontSize="11" TextWrapping="Wrap"/>
+        </Border>
+    </Grid>
+</UserControl>

@@ -1,0 +1,15 @@
+﻿<Window x:Class="Chess.SubWindow.ChildSelecteWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Chess.SubWindow"
+        mc:Ignorable="d"
+        Title="选择下一招" Height="100" Width="600" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowInTaskbar="False" Background="#FFD0A86D">
+    <Grid>
+        <WrapPanel x:Name="wrapPanel" VerticalAlignment="Center" Margin="20,0,20,0" Height="40">
+            <d:Button Content="2" Width="30" Height="30" Margin="20,0,0,0"/>
+
+        </WrapPanel>
+    </Grid>
+</Window>

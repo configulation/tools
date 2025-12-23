@@ -1,0 +1,93 @@
+﻿<UserControl x:Class="Chess.QiZi"  
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Chess"
+             mc:Ignorable="d" 
+             d:DesignHeight="66" d:DesignWidth="66" RenderTransformOrigin="0.5,0.5" Width="66" Height="66">
+    <UserControl.Resources>
+        <TransformGroup x:Key="UserControlRenderTransform1">
+            <ScaleTransform ScaleX="1"/>
+        </TransformGroup>
+        <Storyboard x:Key="QiZiSeleted">
+            <ParallelTimeline AutoReverse="False">
+                <DoubleAnimation BeginTime="0:0:0" Duration="0:0:0.1" Storyboard.TargetName="qzShadow" Storyboard.TargetProperty="ShadowDepth" From="8" To="25"/>
+            </ParallelTimeline>
+        </Storyboard>
+        <Storyboard x:Key="YinYingCancel">
+            <ParallelTimeline AutoReverse="False">
+                <DoubleAnimation BeginTime="0:0:0.2" Duration="0:0:0.1" Storyboard.TargetName="qzShadow" Storyboard.TargetProperty="ShadowDepth" From="25" To="8"/>
+            </ParallelTimeline>
+        </Storyboard>
+    </UserControl.Resources>
+    <Grid RenderTransform="{DynamicResource UserControlRenderTransform1}" x:Name="MaingGrid" MouseLeftButtonUp="Image_MouseLeftButtonUp">
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="移除棋子" Click="DeleteQiZi"></MenuItem>
+            </ContextMenu>
+        </Grid.ContextMenu>
+        <Image x:Name="QiZiImage"  HorizontalAlignment="Stretch" Height="66" VerticalAlignment="Stretch" Width="66" Stretch="Uniform" Panel.ZIndex="5" RenderTransform="{DynamicResource UserControlRenderTransform1}" MinWidth="66" MinHeight="66" MaxWidth="66" MaxHeight="66" Cursor="Hand">
+            <Image.Effect>
+                <DropShadowEffect x:Name="qzShadow" ShadowDepth="8" BlurRadius="15" Opacity="0.5"/>
+            </Image.Effect>
+        </Image>
+        <Path x:Name="yuxuankuang_image1" Fill="Red" StrokeThickness="0" Visibility="Hidden">
+            <Path.Effect>
+                <DropShadowEffect Opacity="0.5" BlurRadius="2" ShadowDepth="2"/>
+            </Path.Effect>
+            <Path.Data>
+                <CombinedGeometry GeometryCombineMode="Exclude">
+                    <CombinedGeometry.Geometry1>
+                        <CombinedGeometry GeometryCombineMode="Exclude">
+                            <CombinedGeometry.Geometry1>
+                                <RectangleGeometry Rect="3,3,60,60"/>
+                            </CombinedGeometry.Geometry1>
+                            <CombinedGeometry.Geometry2>
+                                <RectangleGeometry Rect="6,6,54,54"/>
+                            </CombinedGeometry.Geometry2>
+                        </CombinedGeometry>
+
+                    </CombinedGeometry.Geometry1>
+                    <CombinedGeometry.Geometry2>
+                        <RectangleGeometry Rect="-2,-2,70,70">
+                            <RectangleGeometry.Transform>
+                                <TransformGroup>
+                                    <ScaleTransform/>
+                                    <SkewTransform/>
+                                    <RotateTransform Angle="45" CenterX="33" CenterY="33"/>
+                                    <TranslateTransform/>
+                                </TransformGroup>
+                            </RectangleGeometry.Transform>
+                        </RectangleGeometry>
+                    </CombinedGeometry.Geometry2>
+                </CombinedGeometry>
+            </Path.Data>
+        </Path>
+        <Ellipse x:Name="yuxuankuang_image" Fill="LightGoldenrodYellow" Visibility="Hidden">
+            <Ellipse.Effect>
+                <BlurEffect Radius="2" RenderingBias="Performance"/>
+            </Ellipse.Effect>
+        </Ellipse>
+
+        <Ellipse x:Name="yuanweizhi_image" Width="33" Height="33" StrokeThickness="2">
+            <Ellipse.Effect>
+                <DropShadowEffect BlurRadius="2" ShadowDepth="2" Opacity="0.3"/>
+            </Ellipse.Effect>
+            <Ellipse.Fill>
+                <RadialGradientBrush>
+                    <GradientStop Color="white" Offset="0.4"/>
+                    <GradientStop Color="Transparent" Offset="0.6"/>
+                    <GradientStop Color="Transparent" Offset="0.75"/>
+                    <GradientStop Offset="0.95" Color="white"/>
+                    <GradientStop Offset="1" Color="white"/>
+                </RadialGradientBrush>
+            </Ellipse.Fill>
+        </Ellipse>
+        <d:Image HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Source="/picture/红帅.png" Width="66" Height="66" Visibility="Hidden">
+            <Image.Effect>
+                <DropShadowEffect/>
+            </Image.Effect>
+        </d:Image>
+    </Grid>
+</UserControl>

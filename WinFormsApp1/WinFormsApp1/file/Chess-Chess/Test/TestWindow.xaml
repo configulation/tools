@@ -1,0 +1,31 @@
+﻿<Window x:Class="Chess.Test.TestWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Chess.Test"
+        mc:Ignorable="d"
+        Title="功能测试" Height="450" Width="800">
+    <Grid>
+        <TabControl>
+            <TabItem Header="等待动画">
+                <Frame Source="Waiting.xaml">
+                    <Frame.Background>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="#FF043A63" Offset="1"/>
+                            <GradientStop Color="#FFA8D3F5"/>
+                            <GradientStop Color="#FE59A5E0" Offset="0.183"/>
+                            <GradientStop Color="#FE6BA3CF" Offset="0.363"/>
+                            <GradientStop Color="#FE1C6BA9" Offset="0.569"/>
+                            <GradientStop Color="#FE256CA3" Offset="0.785"/>
+                        </LinearGradientBrush>
+                    </Frame.Background>
+                </Frame>
+            </TabItem>
+            <TabItem Header="火环动画">
+                <Frame Background="Black" Source="Huo.xaml"/>
+            </TabItem>
+        </TabControl>
+
+    </Grid>
+</Window>

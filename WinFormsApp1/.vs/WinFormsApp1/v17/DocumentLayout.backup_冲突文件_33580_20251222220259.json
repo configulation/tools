@@ -1,0 +1,105 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\ProgramCode\\BaiduSyncdisk\\QUANYUANCHEN\\cheese\\.net\\winfrom\\WinFormsApp1\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{C859BCC4-44EC-48C8-B776-114B1176BE95}|WinFormsApp1\\WinFormsApp1.csproj|d:\\programcode\\baidusyncdisk\\quanyuanchen\\cheese\\.net\\winfrom\\winformsapp1\\winformsapp1\\winformsapp1.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{C859BCC4-44EC-48C8-B776-114B1176BE95}|WinFormsApp1\\WinFormsApp1.csproj|solutionrelative:winformsapp1\\winformsapp1.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C859BCC4-44EC-48C8-B776-114B1176BE95}|WinFormsApp1\\WinFormsApp1.csproj|d:\\programcode\\baidusyncdisk\\quanyuanchen\\cheese\\.net\\winfrom\\winformsapp1\\winformsapp1\\first menu\\remotecontrol\\network\\networkmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C859BCC4-44EC-48C8-B776-114B1176BE95}|WinFormsApp1\\WinFormsApp1.csproj|solutionrelative:winformsapp1\\first menu\\remotecontrol\\network\\networkmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9C280C0A-C92F-411F-93A4-1BC8F7159D4C}|RelayServer\\RemoteControl.RelayServer.csproj|d:\\programcode\\baidusyncdisk\\quanyuanchen\\cheese\\.net\\winfrom\\winformsapp1\\relayserver\\remotecontrol.relayserver.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{9C280C0A-C92F-411F-93A4-1BC8F7159D4C}|RelayServer\\RemoteControl.RelayServer.csproj|solutionrelative:relayserver\\remotecontrol.relayserver.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9C280C0A-C92F-411F-93A4-1BC8F7159D4C}|RelayServer\\RemoteControl.RelayServer.csproj|d:\\programcode\\baidusyncdisk\\quanyuanchen\\cheese\\.net\\winfrom\\winformsapp1\\relayserver\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C280C0A-C92F-411F-93A4-1BC8F7159D4C}|RelayServer\\RemoteControl.RelayServer.csproj|solutionrelative:relayserver\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C859BCC4-44EC-48C8-B776-114B1176BE95}|WinFormsApp1\\WinFormsApp1.csproj|d:\\programcode\\baidusyncdisk\\quanyuanchen\\cheese\\.net\\winfrom\\winformsapp1\\winformsapp1\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C859BCC4-44EC-48C8-B776-114B1176BE95}|WinFormsApp1\\WinFormsApp1.csproj|solutionrelative:winformsapp1\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "WinFormsApp1",
+              "DocumentMoniker": "D:\\ProgramCode\\BaiduSyncdisk\\QUANYUANCHEN\\cheese\\.net\\winfrom\\WinFormsApp1\\WinFormsApp1\\WinFormsApp1.csproj",
+              "RelativeDocumentMoniker": "WinFormsApp1\\WinFormsApp1.csproj",
+              "ToolTip": "D:\\ProgramCode\\BaiduSyncdisk\\QUANYUANCHEN\\cheese\\.net\\winfrom\\WinFormsApp1\\WinFormsApp1\\WinFormsApp1.csproj*",
+              "RelativeToolTip": "WinFormsApp1\\WinFormsApp1.csproj*",
+              "ViewState": "AgIAAAAAAAAAAAAAAADwvwAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-12-22T04:09:17.612Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "NetworkManager.cs",
+              "DocumentMoniker": "D:\\ProgramCode\\BaiduSyncdisk\\QUANYUANCHEN\\cheese\\.net\\winfrom\\WinFormsApp1\\WinFormsApp1\\first menu\\RemoteControl\\Network\\NetworkManager.cs",
+              "RelativeDocumentMoniker": "WinFormsApp1\\first menu\\RemoteControl\\Network\\NetworkManager.cs",
+              "ToolTip": "D:\\ProgramCode\\BaiduSyncdisk\\QUANYUANCHEN\\cheese\\.net\\winfrom\\WinFormsApp1\\WinFormsApp1\\first menu\\RemoteControl\\Network\\NetworkManager.cs",
+              "RelativeToolTip": "WinFormsApp1\\first menu\\RemoteControl\\Network\\NetworkManager.cs",
+              "ViewState": "AgIAADYAAAAAAAAAAAAnwEYAAAAlAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-22T03:37:18.55Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\ProgramCode\\BaiduSyncdisk\\QUANYUANCHEN\\cheese\\.net\\winfrom\\WinFormsApp1\\RelayServer\\Program.cs",
+              "RelativeDocumentMoniker": "RelayServer\\Program.cs",
+              "ToolTip": "D:\\ProgramCode\\BaiduSyncdisk\\QUANYUANCHEN\\cheese\\.net\\winfrom\\WinFormsApp1\\RelayServer\\Program.cs",
+              "RelativeToolTip": "RelayServer\\Program.cs",
+              "ViewState": "AgIAAEMBAAAAAAAAAAAAAEgBAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-22T02:29:14.887Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "RemoteControl.RelayServer",
+              "DocumentMoniker": "D:\\ProgramCode\\BaiduSyncdisk\\QUANYUANCHEN\\cheese\\.net\\winfrom\\WinFormsApp1\\RelayServer\\RemoteControl.RelayServer.csproj",
+              "RelativeDocumentMoniker": "RelayServer\\RemoteControl.RelayServer.csproj",
+              "ToolTip": "D:\\ProgramCode\\BaiduSyncdisk\\QUANYUANCHEN\\cheese\\.net\\winfrom\\WinFormsApp1\\RelayServer\\RemoteControl.RelayServer.csproj",
+              "RelativeToolTip": "RelayServer\\RemoteControl.RelayServer.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAADwvwgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-12-22T02:29:02.944Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\ProgramCode\\BaiduSyncdisk\\QUANYUANCHEN\\cheese\\.net\\winfrom\\WinFormsApp1\\WinFormsApp1\\Program.cs",
+              "RelativeDocumentMoniker": "WinFormsApp1\\Program.cs",
+              "ToolTip": "D:\\ProgramCode\\BaiduSyncdisk\\QUANYUANCHEN\\cheese\\.net\\winfrom\\WinFormsApp1\\WinFormsApp1\\Program.cs",
+              "RelativeToolTip": "WinFormsApp1\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-20T18:41:35.403Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

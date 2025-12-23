@@ -1,0 +1,225 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net472</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <LangVersion>8.0</LangVersion>
+    <!-- 添加设计器支持 -->
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <UseWPF>false</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="bin\Debug\net472\engine\Pikafish\.github\**" />
+    <EmbeddedResource Remove="bin\Debug\net472\engine\Pikafish\.github\**" />
+    <None Remove="bin\Debug\net472\engine\Pikafish\.github\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ExcelDataReader" Version="3.7.0" />
+    <PackageReference Include="ExcelDataReader.DataSet" Version="3.7.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="10.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="NPOI" Version="2.7.4" />
+    <PackageReference Include="OpenCvSharp4" Version="4.11.0.20250507" />
+    <PackageReference Include="OpenCvSharp4.Extensions" Version="4.5.3.20211228" />
+    <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.11.0.20250507" />
+    <PackageReference Include="Oracle.ManagedDataAccess" Version="21.10.0" />
+    <PackageReference Include="SunnyUI" Version="3.3.9" />
+    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.8" />
+    <PackageReference Include="Tesseract" Version="5.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data.SqlClient" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+
+  <!-- 添加设计器支持 -->
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="pages.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\software_launcher.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="second menu\first sub menu\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\Android\pikafish-armv8" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\Android\pikafish-armv8-dotprod" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\AUTHORS" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\CONTRIBUTING.md" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\Copying.txt" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\Linux\pikafish-avx2" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\Linux\pikafish-avx512" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\Linux\pikafish-avx512bw" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\Linux\pikafish-avx512icl" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\Linux\pikafish-avxvnni" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\Linux\pikafish-bmi2" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\Linux\pikafish-sse41-popcnt" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\Linux\pikafish-vnni512" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\MacOS\pikafish-apple-silicon" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\NNUE-License.md" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\pikafish.nnue" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\README.md" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\Top CPU Contributors.txt" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\Wiki\Advanced-topics.md" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\Wiki\Compiling-from-source.md" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\Wiki\Developers.md" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\Wiki\Download-and-usage.md" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\Wiki\Home.md" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\Wiki\Pikafish-FAQ.md" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\Wiki\Terminology.md" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\Wiki\UCI-&amp;-Commands.md" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\Wiki\_Footer.md" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\Windows\pikafish-avx2.exe" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\Windows\pikafish-avx512.exe" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\Windows\pikafish-avx512bw.exe" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\Windows\pikafish-avx512icl.exe" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\Windows\pikafish-avxvnni.exe" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\Windows\pikafish-bmi2.exe" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\Windows\pikafish-sse41-popcnt.exe" />
+    <None Include="bin\Debug\net472\engine\Pikafish.2025-10-27\Windows\pikafish-vnni512.exe" />
+    <None Include="bin\Debug\net472\engine\Pikafish\.clang-format" />
+    <None Include="bin\Debug\net472\engine\Pikafish\.gitignore" />
+    <None Include="bin\Debug\net472\engine\Pikafish\AUTHORS" />
+    <None Include="bin\Debug\net472\engine\Pikafish\CITATION.cff" />
+    <None Include="bin\Debug\net472\engine\Pikafish\CONTRIBUTING.md" />
+    <None Include="bin\Debug\net472\engine\Pikafish\Copying.txt" />
+    <None Include="bin\Debug\net472\engine\Pikafish\README.md" />
+    <None Include="bin\Debug\net472\engine\Pikafish\scripts\.gitattributes" />
+    <None Include="bin\Debug\net472\engine\Pikafish\scripts\get_native_properties.sh" />
+    <None Include="bin\Debug\net472\engine\Pikafish\scripts\net.sh" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\benchmark.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\benchmark.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\bitboard.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\bitboard.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\engine.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\engine.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\evaluate.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\evaluate.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\common\allocations.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\common\bits.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\common\bitstream.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\common\compiler.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\common\cpu.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\common\debug.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\common\debug.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\common\entropy_common.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\common\error_private.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\common\error_private.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\common\fse.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\common\fse_decompress.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\common\huf.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\common\mem.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\common\pool.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\common\pool.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\common\portability_macros.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\common\threading.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\common\threading.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\common\xxhash.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\common\xxhash.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\common\zstd_common.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\common\zstd_deps.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\common\zstd_internal.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\common\zstd_trace.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\decompress\huf_decompress.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\decompress\huf_decompress_amd64.S" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\decompress\zstd_ddict.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\decompress\zstd_ddict.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\decompress\zstd_decompress.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\decompress\zstd_decompress_block.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\decompress\zstd_decompress_block.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\decompress\zstd_decompress_internal.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\zstd.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\external\zstd_errors.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\history.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\magics.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\main.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\Makefile" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\memory.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\memory.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\misc.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\misc.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\movegen.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\movegen.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\movepick.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\movepick.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\nnue\features\half_ka_v2_hm.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\nnue\features\half_ka_v2_hm.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\nnue\layers\affine_transform.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\nnue\layers\affine_transform_sparse_input.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\nnue\layers\clipped_relu.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\nnue\layers\sqr_clipped_relu.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\nnue\network.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\nnue\network.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\nnue\nnue_accumulator.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\nnue\nnue_accumulator.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\nnue\nnue_architecture.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\nnue\nnue_common.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\nnue\nnue_feature_transformer.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\nnue\nnue_misc.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\nnue\nnue_misc.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\nnue\simd.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\numa.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\perft.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\position.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\position.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\score.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\score.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\search.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\search.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\shm.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\shm_linux.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\thread.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\thread.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\thread_win32_osx.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\timeman.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\timeman.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\tt.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\tt.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\tune.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\tune.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\types.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\uci.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\uci.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\ucioption.cpp" />
+    <None Include="bin\Debug\net472\engine\Pikafish\src\ucioption.h" />
+    <None Include="bin\Debug\net472\engine\Pikafish\tests\.gitattributes" />
+    <None Include="bin\Debug\net472\engine\Pikafish\tests\instrumented.sh" />
+    <None Include="bin\Debug\net472\engine\Pikafish\tests\perft.sh" />
+    <None Include="bin\Debug\net472\engine\Pikafish\tests\reprosearch.sh" />
+    <None Include="bin\Debug\net472\engine\Pikafish\tests\signature.sh" />
+    <None Include="bin\Debug\net472\engine\Pikafish\tests\testing.py" />
+    <None Include="bin\Debug\net472\engine\Pikafish\Top CPU Contributors.txt" />
+  </ItemGroup>
+
+</Project>

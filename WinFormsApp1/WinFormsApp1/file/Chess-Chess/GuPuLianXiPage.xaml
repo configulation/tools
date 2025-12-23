@@ -1,0 +1,174 @@
+﻿<Page x:Class="Chess.GuPuLianXiPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Chess" xmlns:customclass="clr-namespace:Chess.CustomClass" 
+      mc:Ignorable="d" 
+      Title="QiPanPage" Loaded="MainFormLoaded" SnapsToDevicePixels="True" UseLayoutRounding="True">
+    <Page.Resources>
+        <local:GlobalValue x:Key="Glbv"/>
+        <Storyboard x:Key="turnLight"  Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)" AutoReverse="False" FillBehavior="HoldEnd">
+            <ColorAnimation  From="#333333" To="LightYellow" Duration="0:0:0.2"/>
+        </Storyboard>
+        <Storyboard x:Key="turnBlack" Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)" AutoReverse="False" FillBehavior="HoldEnd">
+            <ColorAnimation From="LightYellow" To="#333333" Duration="0:0:0.2"/>
+        </Storyboard>
+    </Page.Resources>
+    <Grid>
+        <Viewbox StretchDirection="DownOnly">
+            <Grid x:Name="mainGrid" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" MinWidth="1100" MaxWidth="1100">
+                <Grid.DataContext>
+                    <local:Settings/>
+                </Grid.DataContext>
+                <Border x:Name="openQiPuGrid"  Background="#99000000" Panel.ZIndex="100" IsVisibleChanged="OnQiPuKuOpen" Visibility="Hidden">
+                    <Grid VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,50,0,0" Height="400" Background="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="50"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="50"/>
+                        </Grid.RowDefinitions>
+                        <Grid>
+                            <WrapPanel VerticalAlignment="Center">
+                                <TextBlock Text="按古谱名称筛选：" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,0,0,0"/>
+                                <ComboBox Name="ShaiXuan" HorizontalAlignment="Left" VerticalAlignment="Center" Width="150" Margin="5,0,0,0">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Name}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                                <TextBlock Text="按关键字查找：" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="50,0,0,0"/>
+                                <TextBox Name="FindStr" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0" Width="200"/>
+                                <Button Content="查找" HorizontalAlignment="Left" VerticalAlignment="Center" Width="60" Margin="10,0,0,0"/>
+                            </WrapPanel>
+                        </Grid>
+                        <DataGrid x:Name="qipuBook" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" Grid.Row="1" MouseDoubleClick="OnDoubleClick">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding rowid}" Header="序号" Width="50" IsReadOnly="True"/>
+                                <DataGridTextColumn Binding="{Binding GuPuName}" Header="棋谱类别" Width="150" IsReadOnly="True"/>
+                                <DataGridTextColumn Binding="{Binding Title}" Header="棋局名称" Width="200" IsReadOnly="True"/>
+                                <DataGridTextColumn Binding="{Binding Memo}" Header="棋局说明" Width="400" IsReadOnly="True"/>
+                            </DataGrid.Columns>
+                            <d:TabItem/>
+                            <d:TabItem/>
+                            <d:TabItem/>
+                            <d:TabItem/>
+                            <DataGrid.ContextMenu>
+                                <ContextMenu x:Name="menu">
+                                    <MenuItem x:Name="refresh" Header="刷新" Click="QipuDBListRefresh"/>
+                                    <Separator/>
+                                    <MenuItem x:Name="delete" Header="删除" Click="DeleteRowData"/>
+                                </ContextMenu>
+                            </DataGrid.ContextMenu>
+                        </DataGrid>
+                        <WrapPanel Margin="0,20,50,0" HorizontalAlignment="Right" Grid.Row="2" Height="50">
+                            <Button Content="确定" Width="60" Click="OnOkClick"/>
+                            <Button Content="取消" Margin="20,0,0,0" Width="60" Click="OnCancelClick"/>
+                        </WrapPanel>
+
+                    </Grid>
+                </Border>
+                <!--#region  走棋指示灯 -->
+                <Ellipse x:Name="redSideRect" Width="30" Height="30" Fill="Gray" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,20,0,0" Stroke="Black" StrokeThickness="2">
+                    <Ellipse.Style>
+                        <Style TargetType="{x:Type Ellipse}">
+                            <Style.Triggers>
+                                <DataTrigger Value="True" Binding="{Binding Default.CurrentSide}">
+                                    <DataTrigger.EnterActions>
+                                        <BeginStoryboard Storyboard="{StaticResource ResourceKey=turnLight}"/>
+                                    </DataTrigger.EnterActions>
+                                    <DataTrigger.ExitActions>
+                                        <BeginStoryboard Storyboard="{StaticResource ResourceKey=turnBlack}"/>
+                                    </DataTrigger.ExitActions>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Ellipse.Style>
+                </Ellipse>
+                <Ellipse x:Name="blackSideRect" Width="30" Height="30" Fill="Gray" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,60,0,0" Stroke="Black" StrokeThickness="2">
+                    <Ellipse.Style>
+                        <Style TargetType="{x:Type Ellipse}">
+                            <Style.Triggers>
+                                <DataTrigger Value="True" Binding="{Binding Default.CurrentSide, Mode=OneWay}">
+                                    <DataTrigger.EnterActions>
+                                        <BeginStoryboard Storyboard="{StaticResource ResourceKey=turnBlack}"/>
+                                    </DataTrigger.EnterActions>
+                                    <DataTrigger.ExitActions>
+                                        <BeginStoryboard Storyboard="{StaticResource ResourceKey=turnLight}"/>
+                                    </DataTrigger.ExitActions>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Ellipse.Style>
+                </Ellipse>
+                <!--#endregion-->
+                <Border BorderThickness="3" CornerRadius="5,5,5,5" Style="{DynamicResource borderStyle}"/>
+                <Grid Width="{Binding Width, ElementName=qipan_topBlack}" HorizontalAlignment="Left" Height="{Binding Height, ElementName=qipan_topBlack}" VerticalAlignment="Top">
+                    <Image x:Name="qipan_topBlack" Stretch="None" Source="/picture/棋盘（黑上）.png" StretchDirection="Both" HorizontalAlignment="Left" VerticalAlignment="Center" Visibility="Visible">
+                        <Image.Effect>
+                            <DropShadowEffect Color="#FF7B7A7A" Opacity="1" BlurRadius="10"/>
+                        </Image.Effect>
+                    </Image>
+                    <Image x:Name="qipan_topRed" Source="/picture/棋盘（红上）.png" Stretch="None" HorizontalAlignment="Left" VerticalAlignment="Center" Visibility="Hidden">
+                        <Image.Effect>
+                            <DropShadowEffect Color="#FF7B7A7A" Opacity="1" BlurRadius="10"/>
+                        </Image.Effect>
+                    </Image>
+                    <Grid x:Name="QiPanOver" HorizontalAlignment="Left" VerticalAlignment="Top" Width="629" Height="695" Margin="67,53,0,0" Background="#4CA7ED17" Visibility="Hidden"/>
+                    <Canvas x:Name="qiziCanvas" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Disabled" Cursor="Arrow"/>
+                    <Grid x:Name="DrawGrid" IsHitTestVisible="False" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                    <Grid x:Name="JueshaGrid" HorizontalAlignment="Left" VerticalAlignment="Top" Width="629" Height="695" Margin="67,53,0,0"/>
+                </Grid>
+                <Grid x:Name="Infomation_board" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,55,60,18" MinWidth="321" MinHeight="321" Height="695">
+                    <Grid.Background>
+                        <ImageBrush ImageSource="/picture/Resource/information_board_321_321.png"/>
+                    </Grid.Background>
+                    <Grid Margin="10,17,10,15">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="古谱名称：" VerticalAlignment="Center"/>
+                        <TextBox Name="GupuName" Grid.Column="1" VerticalAlignment="Center"/>
+                        <TextBlock Text="棋局名称：" Grid.Row="1" Margin="0,5,0,0" VerticalAlignment="Center"/>
+                        <TextBox x:Name="QiJuName" Grid.Row="1" Grid.Column="1" Margin="0,5,0,0" VerticalAlignment="Center" Height="21"/>
+                        <TextBlock Text="结果：" Grid.Row="2" Margin="0,5,0,0" VerticalAlignment="Center"/>
+                        <TextBox Name="Result" Grid.Row="2" Grid.Column="1" Margin="0,5,0,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="棋谱说明：" Grid.Row="3" Margin="0,5,0,0" VerticalAlignment="Center"/>
+                        <TextBox x:Name="Remarks" AcceptsReturn="True" TextWrapping="Wrap" Grid.Row="3" Grid.Column="1" Margin="0,5,0,0" VerticalAlignment="Center" Height="50" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
+                        <DataGrid x:Name="QiPuDataGrid" Grid.Row="4" Grid.ColumnSpan="2" Margin="0,5,0,5" AutoGenerateColumns="False" HorizontalContentAlignment="Center" HorizontalScrollBarVisibility="Disabled" IsSynchronizedWithCurrentItem="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" CanUserSortColumns="False" VerticalAlignment="Top" Width="301" Background="White">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding Id}" Header="步" Width="30"/>
+                                <DataGridTextColumn Binding="{Binding Cn}" Header="着法" Width="100" />
+                                <DataGridTextColumn Binding="{Binding Remarks}" Header="备注" Width="*"/>
+                            </DataGrid.Columns>
+                            <d:TabItem/>
+                            <d:TabItem/>
+                        </DataGrid>
+                    </Grid>
+                </Grid>
+                <!--#region 按钮面板 -->
+
+                <Border VerticalAlignment="Bottom" Height="75" Margin="10,0,10,10" CornerRadius="3,3,3,3">
+                    <WrapPanel Height="30" VerticalAlignment="Center" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                        <Button Content="重新开始"  Style="{DynamicResource button}" HorizontalAlignment="Left" Margin="77,0,0,0" VerticalAlignment="Center" Width="70" Click="ResetBtnClick"/>
+                        <Button Content="上一步" Style="{DynamicResource button}" HorizontalAlignment="Left" Margin="20,0,0,0" VerticalAlignment="Center" Width="70" Click="HuiQiButton"/>
+                        <Button Content="下一步" Style="{DynamicResource button}" HorizontalAlignment="Left" Margin="20,0,0,0" VerticalAlignment="Center" Width="70" Click="NextStep"/>
+                        <Button Content="翻转棋盘" Style="{DynamicResource button}" HorizontalAlignment="Left" Margin="20,0,0,0" VerticalAlignment="Center" Width="70" Click="OnFanZhuanQiPan"/>
+                        <Button Content="古谱库" Style="{DynamicResource button}" HorizontalAlignment="Left" Margin="20,0,0,0" VerticalAlignment="Center" Click="OpenGuPuBook" Width="70"/>
+                        <CheckBox Content="显示提示箭头" Background="#FFF9F08D" Foreground="LightYellow" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="50,0,0,0" IsChecked="{Binding Default.ArrowVisable}" />
+                    </WrapPanel>
+                </Border>
+                <!--#endregion-->
+            </Grid>
+        </Viewbox>
+    </Grid>
+</Page>

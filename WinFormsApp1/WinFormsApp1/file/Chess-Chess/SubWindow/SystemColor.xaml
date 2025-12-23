@@ -1,0 +1,23 @@
+﻿<Window x:Class="Chess.SubWindow.SystemColor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Chess.SubWindow"
+        mc:Ignorable="d"
+        Title="系统颜色表" Height="1000" Width="800" Loaded="OnLoaded">
+    <Grid>
+        <WrapPanel x:Name="colorStackPanel" Background="#FF272626" Orientation="Vertical" VerticalAlignment="Stretch">
+            <d:WrapPanel VerticalAlignment="Center" Margin="10,10,10,10">
+                <TextBlock Text="text:" Width="150" Foreground="#FFFBFBFB"/>
+                <Border Background="AliceBlue" Width="200"/>
+            </d:WrapPanel>
+            <WrapPanel.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="按颜色名称排序" Click="SortByName"/>
+                    <MenuItem Header="按颜色值排序" Click="SortByValue"/>
+                </ContextMenu>
+            </WrapPanel.ContextMenu>
+        </WrapPanel>
+    </Grid>
+</Window>

@@ -1,0 +1,37 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style x:Key="button" TargetType="{x:Type Button}">
+        <Setter Property="Foreground" Value="#FF4A3F0C"/>
+        <Setter Property="BorderBrush" Value="#FF564808"/>
+        <Setter Property="Height" Value="30"/>
+        <Setter Property="Background" Value="#FFD8B67C"/>
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect Opacity="0.5" ShadowDepth="10" BlurRadius="10" Color="#FF6D530D" RenderingBias="Performance"/>
+            </Setter.Value>
+        </Setter>
+        
+    </Style>
+    <Style x:Key="mainMenuButton" TargetType="{x:Type Button}">
+        <Setter Property="Padding" Value="20,10,20,10"/>
+        <Setter Property="Margin" Value="0,10,0,0"/>
+        <Setter Property="Background" Value="#7FDDDDDD"/>
+        <Setter Property="Foreground" Value="#FF5D4E03"/>
+        <Setter Property="BorderBrush" Value="#FF5D4E03"/>
+        <Setter Property="FontSize" Value="36"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="FontFamily" Value="KaiTi"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="BorderThickness" Value="2,2,2,2"/>
+ 
+    </Style>
+    <Style x:Key="borderStyle_Green" TargetType="{x:Type Border}">
+        <Setter Property="BorderBrush" Value="#CC0D6905"/>
+        <Setter Property="Background" Value="#330F9C03"/>
+    </Style>
+    <Style x:Key="borderStyle_Blue" TargetType="{x:Type Border}">
+        <Setter Property="BorderBrush" Value="#CC05694B"/>
+        <Setter Property="Background" Value="#33055B4E"/>
+    </Style>
+</ResourceDictionary>

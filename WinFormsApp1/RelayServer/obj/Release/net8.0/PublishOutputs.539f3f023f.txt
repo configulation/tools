@@ -1,0 +1,5 @@
+D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\RelayServer\bin\Release\net8.0\publish\RemoteControl.RelayServer.exe
+D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\RelayServer\bin\Release\net8.0\publish\RemoteControl.RelayServer.dll
+D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\RelayServer\bin\Release\net8.0\publish\RemoteControl.RelayServer.deps.json
+D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\RelayServer\bin\Release\net8.0\publish\RemoteControl.RelayServer.runtimeconfig.json
+D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\RelayServer\bin\Release\net8.0\publish\RemoteControl.RelayServer.pdb

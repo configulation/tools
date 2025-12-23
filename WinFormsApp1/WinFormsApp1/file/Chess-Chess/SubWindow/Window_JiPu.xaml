@@ -1,0 +1,19 @@
+﻿<Window x:Class="Chess.Window_JiPu"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Chess"
+        mc:Ignorable="d"
+        Title="记谱" Height="913" Width="150" Loaded="FormLoad" Icon="/picture/象128.png" UseLayoutRounding="True">
+    <Grid>
+        <DataGrid x:Name="JiPuDataGrid" AutoGenerateColumns="False" IsSynchronizedWithCurrentItem="True" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" Margin="5,10,5,10" VerticalAlignment="Top" CanUserResizeRows="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding Id}" Header="步" Width="30"/>
+                <DataGridTextColumn Binding="{Binding Cn}" Header="棋谱" Width="100" />
+            </DataGrid.Columns>
+            <d:TabItem/>
+            
+        </DataGrid>
+    </Grid>
+</Window>

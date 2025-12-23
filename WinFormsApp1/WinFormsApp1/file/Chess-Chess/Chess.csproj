@@ -1,0 +1,420 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <StartupObject>Chess.App</StartupObject>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <ApplicationIcon>picture\象128.ico</ApplicationIcon>
+    <Win32Resource />
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="bin\**" />
+    <Compile Remove="DataModels\**" />
+    <Compile Remove="Web\**" />
+    <EmbeddedResource Remove="bin\**" />
+    <EmbeddedResource Remove="DataModels\**" />
+    <EmbeddedResource Remove="Web\**" />
+    <None Remove="bin\**" />
+    <None Remove="DataModels\**" />
+    <None Remove="Web\**" />
+    <Page Remove="bin\**" />
+    <Page Remove="DataModels\**" />
+    <Page Remove="Web\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="CustomClass\MyPrompt.xaml.cs" />
+    <Compile Remove="GlobalValueBase.cs" />
+    <Compile Remove="MyQiZi.cs" />
+    <Compile Remove="SubWindow\Web_Window.xaml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="DB\KaiJuKu.db" />
+    <None Remove="Engine\BOOK.DAT" />
+    <None Remove="Engine\ELEEYE.EXE" />
+    <None Remove="juesha.png" />
+    <None Remove="KaiJuKu.db" />
+    <None Remove="picture\BackGround\山水之间.jpeg" />
+    <None Remove="picture\BackGround\星云.jpeg" />
+    <None Remove="picture\BackGround\晚霞.jpg" />
+    <None Remove="picture\BackGround\木纹_浅色3000.jpeg" />
+    <None Remove="picture\BackGround\木纹_深色2243.jpeg" />
+    <None Remove="picture\BackGround\睡美人.jpg" />
+    <None Remove="picture\BackGround\胡杨林.jpg" />
+    <None Remove="picture\BackGround\青草.jpg" />
+    <None Remove="picture\break_roleH_10zhanghan.png" />
+    <None Remove="picture\Resource\huohuan.png" />
+    <None Remove="picture\Resource\information_board.png" />
+    <None Remove="picture\Resource\information_board_321_321.png" />
+    <None Remove="picture\Resource\juesha.png" />
+    <None Remove="picture\Resource\木纹1.png" />
+    <None Remove="picture\Resource\木纹3.png" />
+    <None Remove="picture\Resource\木纹4_.jpg" />
+    <None Remove="picture\Resource\木纹_浅色3000.png" />
+    <None Remove="picture\Resource\木纹_深色2243.png" />
+    <None Remove="picture\Resource\红帅.png" />
+    <None Remove="picture\Resource\黑将.png" />
+    <None Remove="picture\大理石1.jpeg" />
+    <None Remove="picture\大理石1.png" />
+    <None Remove="picture\大象.png" />
+    <None Remove="picture\将军.png" />
+    <None Remove="picture\小师妹.png" />
+    <None Remove="picture\木纹_浅色1920.png" />
+    <None Remove="picture\木纹_浅色3000.jpeg" />
+    <None Remove="picture\木纹_深色.jpg" />
+    <None Remove="picture\木纹_深色2243.png" />
+    <None Remove="picture\棋盘1覆膜.png" />
+    <None Remove="picture\棋盘（红上）.png" />
+    <None Remove="picture\棋盘（黑上）.png" />
+    <None Remove="picture\红仕.png" />
+    <None Remove="picture\红兵.png" />
+    <None Remove="picture\红帅.png" />
+    <None Remove="picture\红炮.png" />
+    <None Remove="picture\红相.png" />
+    <None Remove="picture\红车.png" />
+    <None Remove="picture\红马.png" />
+    <None Remove="picture\象128.png" />
+    <None Remove="picture\象棋棋子阴影.png" />
+    <None Remove="picture\青草.jpeg" />
+    <None Remove="picture\黑卒.png" />
+    <None Remove="picture\黑士.png" />
+    <None Remove="picture\黑将.png" />
+    <None Remove="picture\黑炮.png" />
+    <None Remove="picture\黑象.png" />
+    <None Remove="picture\黑车.png" />
+    <None Remove="picture\黑马.png" />
+    <None Remove="Sounds\alarm.mp3" />
+    <None Remove="Sounds\bg.mp3" />
+    <None Remove="Sounds\eat.mp3" />
+    <None Remove="Sounds\Female_001.mp3" />
+    <None Remove="Sounds\Female_0010.mp3" />
+    <None Remove="Sounds\Female_0011.mp3" />
+    <None Remove="Sounds\Female_0012.mp3" />
+    <None Remove="Sounds\Female_0013.mp3" />
+    <None Remove="Sounds\Female_002.mp3" />
+    <None Remove="Sounds\Female_003.mp3" />
+    <None Remove="Sounds\Female_004.mp3" />
+    <None Remove="Sounds\Female_005.mp3" />
+    <None Remove="Sounds\Female_006.mp3" />
+    <None Remove="Sounds\Female_007.mp3" />
+    <None Remove="Sounds\Female_008.mp3" />
+    <None Remove="Sounds\Female_009.mp3" />
+    <None Remove="Sounds\gamelose.mp3" />
+    <None Remove="Sounds\gamewin.mp3" />
+    <None Remove="Sounds\go.mp3" />
+    <None Remove="Sounds\go.wav" />
+    <None Remove="Sounds\goerror.mp3" />
+    <None Remove="Sounds\Male_001.mp3" />
+    <None Remove="Sounds\Male_0010.mp3" />
+    <None Remove="Sounds\Male_0011.mp3" />
+    <None Remove="Sounds\Male_0012.mp3" />
+    <None Remove="Sounds\Male_0013.mp3" />
+    <None Remove="Sounds\Male_002.mp3" />
+    <None Remove="Sounds\Male_003.mp3" />
+    <None Remove="Sounds\Male_004.mp3" />
+    <None Remove="Sounds\Male_005.mp3" />
+    <None Remove="Sounds\Male_006.mp3" />
+    <None Remove="Sounds\Male_007.mp3" />
+    <None Remove="Sounds\Male_008.mp3" />
+    <None Remove="Sounds\Male_009.mp3" />
+    <None Remove="Sounds\Man_jiangjun.mp3" />
+    <None Remove="Sounds\select.mp3" />
+    <None Remove="Sounds\Woman_jiangjun.mp3" />
+    <None Remove="象.jpeg" />
+    <None Remove="青草.jpeg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Remove="Dictionary1.xaml" />
+    <Page Remove="SubWindow\Web_Window.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Engine\BOOK.DAT">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Engine\ELEEYE.EXE">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="picture\BackGround\山水之间.jpeg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="picture\BackGround\星云.jpeg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="picture\BackGround\晚霞.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="picture\BackGround\木纹_浅色3000.jpeg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="picture\BackGround\木纹_深色2243.jpeg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="picture\BackGround\睡美人.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="picture\BackGround\胡杨林.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Resource Include="picture\Resource\黑将.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="picture\Resource\红帅.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Content Include="Sounds\alarm.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\bg.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\eat.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\Female_001.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\Female_0010.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\Female_0011.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\Female_0012.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\Female_0013.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\Female_002.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\Female_003.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\Female_004.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\Female_005.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\Female_006.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\Female_007.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\Female_008.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\Female_009.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\gamelose.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\gamewin.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\go.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\goerror.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\Male_001.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\Male_0010.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\Male_0011.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\Male_0012.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\Male_0013.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\Male_002.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\Male_003.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\Male_004.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\Male_005.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\Male_006.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\Male_007.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\Male_008.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\Male_009.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\Man_jiangjun.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\select.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\Woman_jiangjun.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="picture\BackGround\青草.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Resource Include="picture\Resource\huohuan.png" />
+    <Resource Include="picture\Resource\information_board.png" />
+    <Resource Include="picture\Resource\information_board_321_321.png" />
+    <Resource Include="picture\Resource\juesha.png" />
+    <Resource Include="picture\Resource\木纹1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="picture\Resource\木纹3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="picture\Resource\木纹4_.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="picture\Resource\木纹_浅色3000.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="picture\Resource\木纹_深色2243.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="picture\大象.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Content Include="picture\BackGround\小师妹.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Resource Include="picture\棋盘（红上）.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="picture\棋盘（黑上）.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Content Include="DB\KaiJuKu.db">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="picture\红仕.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="picture\红兵.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="picture\红帅.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="picture\红炮.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="picture\红相.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="picture\红车.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="picture\红马.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Resource Include="picture\象128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Content Include="picture\黑卒.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="picture\黑士.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="picture\黑将.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="picture\黑炮.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="picture\黑象.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="picture\黑车.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="picture\黑马.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="system.data.sqlite" Version="1.0.115.5" />
+
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="CustomClass\JueSha.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="App.config">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CustomToolNamespace></CustomToolNamespace>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="CustomClass\JueSha.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
+</Project>

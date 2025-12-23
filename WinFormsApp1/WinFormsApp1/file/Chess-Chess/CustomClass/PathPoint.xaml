@@ -1,0 +1,77 @@
+﻿<UserControl x:Class="Chess.PathPoint"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Chess"
+             mc:Ignorable="d" 
+             d:DesignHeight="60" d:DesignWidth="60">
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="60" Height="60" MouseUp="OnMouseup">
+        <Border BorderThickness="1,1,1,1" Background="#00000000"/>
+        <Ellipse x:Name="image" Width="12" Height="12" Panel.ZIndex="5" Opacity="0.7">
+            <Ellipse.Effect>
+                <DropShadowEffect ShadowDepth="2" BlurRadius="2" Opacity="0.7" Color="#FF3C3C3C"/>
+            </Ellipse.Effect>
+            <Ellipse.Fill>
+                <RadialGradientBrush Center="0.25,0.25">
+                    <GradientStop Color="#FF008012" Offset="1"/>
+                    <GradientStop Color="#FF00FF0F"/>
+                </RadialGradientBrush>
+            </Ellipse.Fill>
+        </Ellipse>
+        <Grid.Triggers>
+            <EventTrigger RoutedEvent="Grid.MouseEnter">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <ParallelTimeline AutoReverse="False">
+                            <DoubleAnimation 
+                                BeginTime="0:0:0" 
+                                Duration="0:0:0.1" 
+                                Storyboard.TargetName="image"
+                                Storyboard.TargetProperty="Opacity" 
+                                From="0.7" To="1"/>
+                            <DoubleAnimation 
+                                BeginTime="0:0:0" 
+                                Duration="0:0:0.1" 
+                                Storyboard.TargetName="image"
+                                Storyboard.TargetProperty="Width" 
+                                From="12" To="13"/>
+                            <DoubleAnimation 
+                                BeginTime="0:0:0" 
+                                Duration="0:0:0.1" 
+                                Storyboard.TargetName="image"
+                                Storyboard.TargetProperty="Height" 
+                                From="12" To="13"/>
+                        </ParallelTimeline>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+            <EventTrigger RoutedEvent="Grid.MouseLeave">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <ParallelTimeline AutoReverse="False">
+                            <DoubleAnimation 
+                                BeginTime="0:0:0" 
+                                Duration="0:0:0.2" 
+                                Storyboard.TargetName="image"
+                                Storyboard.TargetProperty="Opacity" 
+                                From="1" To="0.7"/>
+                            <DoubleAnimation 
+                                BeginTime="0:0:0" 
+                                Duration="0:0:0.2" 
+                                Storyboard.TargetName="image"
+                                Storyboard.TargetProperty="Width" 
+                                From="13" To="12"/>
+                            <DoubleAnimation 
+                                BeginTime="0:0:0" 
+                                Duration="0:0:0.2" 
+                                Storyboard.TargetName="image"
+                                Storyboard.TargetProperty="Height" 
+                                From="13" To="12"/>
+                        </ParallelTimeline>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Grid.Triggers>
+    </Grid>
+</UserControl>

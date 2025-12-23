@@ -1,0 +1,14 @@
+D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\RelayServer\bin\Debug\net8.0\RemoteControl.RelayServer.exe
+D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\RelayServer\bin\Debug\net8.0\RemoteControl.RelayServer.deps.json
+D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\RelayServer\bin\Debug\net8.0\RemoteControl.RelayServer.runtimeconfig.json
+D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\RelayServer\bin\Debug\net8.0\RemoteControl.RelayServer.dll
+D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\RelayServer\bin\Debug\net8.0\RemoteControl.RelayServer.pdb
+D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\RelayServer\obj\Debug\net8.0\RemoteControl.RelayServer.GeneratedMSBuildEditorConfig.editorconfig
+D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\RelayServer\obj\Debug\net8.0\RemoteControl.RelayServer.AssemblyInfoInputs.cache
+D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\RelayServer\obj\Debug\net8.0\RemoteControl.RelayServer.AssemblyInfo.cs
+D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\RelayServer\obj\Debug\net8.0\RemoteControl.RelayServer.csproj.CoreCompileInputs.cache
+D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\RelayServer\obj\Debug\net8.0\RemoteControl.RelayServer.dll
+D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\RelayServer\obj\Debug\net8.0\refint\RemoteControl.RelayServer.dll
+D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\RelayServer\obj\Debug\net8.0\RemoteControl.RelayServer.pdb
+D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\RelayServer\obj\Debug\net8.0\RemoteControl.RelayServer.genruntimeconfig.cache
+D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\RelayServer\obj\Debug\net8.0\ref\RemoteControl.RelayServer.dll
