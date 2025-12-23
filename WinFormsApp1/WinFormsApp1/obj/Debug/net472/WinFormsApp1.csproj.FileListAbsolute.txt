@@ -179,3 +179,4 @@ D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\WinFo
 D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\WinFormsApp1\bin\Debug\net472\Microsoft.Web.WebView2.WinForms.dll
 D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\WinFormsApp1\bin\Debug\net472\Microsoft.Web.WebView2.Wpf.dll
 D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\WinFormsApp1\bin\Debug\net472\WebView2Loader.dll
+D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\WinFormsApp1\obj\Debug\net472\WinFormsApp1.sourcelink.json

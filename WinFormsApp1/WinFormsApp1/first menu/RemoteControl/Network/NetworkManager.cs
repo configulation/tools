@@ -430,6 +430,11 @@ namespace WinFormsApp1.first_menu.RemoteControl
                     {
                         Console.WriteLine($"[ScreenData] recv frames={receivedScreenFrames} bytes={(data?.Length ?? 0)} at={lastScreenRecvAt:HH:mm:ss.fff}");
                     }
+
+                    if (receivedScreenFrames == 1)
+                    {
+                        OnConnectionStatusChanged?.Invoke(true, $"已收到首帧屏幕数据，大小={(data?.Length ?? 0)} 字节");
+                    }
                     OnScreenDataReceived?.Invoke(data);
                     break;
                     
@@ -556,6 +561,11 @@ namespace WinFormsApp1.first_menu.RemoteControl
                 if (sentScreenFrames == 1 || sentScreenFrames % 100 == 0)
                 {
                     Console.WriteLine($"[ScreenData] send frames={sentScreenFrames} bytes={screenData.Length} at={lastScreenSendAt:HH:mm:ss.fff}");
+                }
+
+                if (sentScreenFrames == 1)
+                {
+                    OnConnectionStatusChanged?.Invoke(true, $"已发送首帧屏幕数据，大小={screenData.Length} 字节");
                 }
                 await SendMessageAsync(MessageType.ScreenData, screenData);
             }

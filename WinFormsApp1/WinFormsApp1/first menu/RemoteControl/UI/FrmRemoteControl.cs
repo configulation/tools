@@ -306,8 +306,21 @@ namespace WinFormsApp1.first_menu.RemoteControl
 
         private void AddLog(string message)
         {
-            uiTextBoxLog.AppendText(message);
-            remoteViewerForm?.AppendLog(message);
+            string rolePrefix = isHost ? "[HOST] " : "[CTRL] ";
+            string finalMessage = rolePrefix + message;
+
+            uiTextBoxLog.AppendText(finalMessage);
+
+            try
+            {
+                uiTextBoxLog.SelectionStart = uiTextBoxLog.TextLength;
+                uiTextBoxLog.ScrollToCaret();
+            }
+            catch
+            {
+            }
+
+            remoteViewerForm?.AppendLog(finalMessage);
         }
 
         private void EnsureRemoteViewerOpened()

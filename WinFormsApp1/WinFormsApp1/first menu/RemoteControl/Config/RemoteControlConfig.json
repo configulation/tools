@@ -71,8 +71,8 @@
     },
     "Advanced": {
       "UseP2P": false,
-      "UseRelay": false,
-      "RelayServer": "",
+      "UseRelay": true,
+      "RelayServer": "103.112.185.127:9100",
       "StunServer": "stun.l.google.com:19302",
       "TurnServer": "",
       "NatTraversal": false,

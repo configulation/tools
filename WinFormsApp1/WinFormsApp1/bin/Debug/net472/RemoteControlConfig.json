@@ -21,7 +21,7 @@
     },
     "Advanced": {
       "UseRelay": true,
-      "RelayServer": "124.23.183.141:9000"
+      "RelayServer": "103.112.185.127:9100"
     }
   }
 }
