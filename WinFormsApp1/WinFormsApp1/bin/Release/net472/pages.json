@@ -1,7 +1,0 @@
-[
-	{ "Text": "识别软件", "PageIndex": 1001, "Type": "WinFormsApp1.first menu.FrmSoftWareAnalysis", "Path": "工具页面", "AlwaysOpen": false },
-	{ "Text": "Excel/CSV互转", "PageIndex": 1002, "Type": "WinFormsApp1.first menu.ExcelAndCsvFileConversion", "Path": "工具页面", "AlwaysOpen": false },
-	{ "Text": "批量启动软件", "PageIndex": 1003, "Type": "WinFormsApp1.first menu.FrmSoftwareQuickLaunch", "Path": "工具页面", "AlwaysOpen": false },
-	{ "Text": "Excel数据导入", "PageIndex": 2001, "Type": "WinFormsApp1.Form1", "Path": "数据导入", "AlwaysOpen": false },
-	{ "Text": "一级菜单-示例1", "PageIndex": 3001, "Type": "WinFormsApp1.second menu.FrmBelongTo1jicaidan", "Path": "一级菜单/二级菜单/三级菜单" }
-] 

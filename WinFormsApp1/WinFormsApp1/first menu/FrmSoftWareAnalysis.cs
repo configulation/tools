@@ -75,7 +75,7 @@ namespace WinFormsApp1.first_menu
 			}
 			catch (Exception ex)
 			{
-				ShowErrorTip($"读取配置失败: {ex.Message}");
+				this.ShowErrorTip($"读取配置失败: {ex.Message}");
 			}
 		}
 
@@ -88,11 +88,11 @@ namespace WinFormsApp1.first_menu
 				string path = Path.Combine(dir, ConfigFile);
 				var json = JsonSerializer.Serialize(models.ToList(), new JsonSerializerOptions { WriteIndented = true });
 				File.WriteAllText(path, json, Encoding.UTF8);
-				ShowSuccessTip("配置已保存");
+				this.ShowSuccessTip("配置已保存");
 			}
 			catch (Exception ex)
 			{
-				ShowErrorTip($"保存配置失败: {ex.Message}");
+				this.ShowErrorTip($"保存配置失败: {ex.Message}");
 			}
 		}
 
@@ -117,11 +117,11 @@ namespace WinFormsApp1.first_menu
 					try
 					{
 						sourceTable = LoadExcel(ofd.FileName);
-						ShowSuccessTip($"已加载 {sourceTable.Rows.Count} 行");
+						this.ShowSuccessTip($"已加载 {sourceTable.Rows.Count} 行");
 					}
 					catch (Exception ex)
 					{
-						ShowErrorTip($"读取Excel失败: {ex.Message}");
+						this.ShowErrorTip($"读取Excel失败: {ex.Message}");
 					}
 				}
 			}
@@ -157,13 +157,13 @@ namespace WinFormsApp1.first_menu
 		{
 			if (sourceTable == null || sourceTable.Rows.Count == 0)
 			{
-				ShowWarningTip("请先导入Excel");
+				this.ShowWarningTip("请先导入Excel");
 				return;
 			}
 			var actives = models.Where(m => m.Enabled && !string.IsNullOrWhiteSpace(m.ApiUrl) && !string.IsNullOrWhiteSpace(m.Model)).ToList();
 			if (actives.Count == 0)
 			{
-				ShowWarningTip("请在表格中至少启用一个模型并填写API信息");
+				this.ShowWarningTip("请在表格中至少启用一个模型并填写API信息");
 				return;
 			}
 
@@ -316,7 +316,7 @@ namespace WinFormsApp1.first_menu
 			catch (Exception ex)
 			{
 				// 若抛异常继续执行
-				ShowErrorTip($"API调用失败: {ex.Message}");
+				this.ShowErrorTip($"API调用失败: {ex.Message}");
 				return $"{{\"choices\":[{{\"message\":{{\"content\":\"API调用错误: {ex.Message}\"}}}}]}}";
 			}
 		}
@@ -406,10 +406,10 @@ namespace WinFormsApp1.first_menu
 
 		private void btnExportCurrent_Click(object sender, EventArgs e)
 		{
-			if (tabResults.TabPages.Count == 0) { ShowWarningTip("无可导出的结果"); return; }
+			if (tabResults.TabPages.Count == 0) { this.ShowWarningTip("无可导出的结果"); return; }
 			var page = tabResults.SelectedTab;
 			var grid = page?.Controls.OfType<UIDataGridView>().FirstOrDefault();
-			if (grid == null || grid.Rows.Count == 0) { ShowWarningTip("当前页无数据"); return; }
+			if (grid == null || grid.Rows.Count == 0) { this.ShowWarningTip("当前页无数据"); return; }
 
 			using (SaveFileDialog sfd = new SaveFileDialog())
 			{
@@ -418,7 +418,7 @@ namespace WinFormsApp1.first_menu
 				if (sfd.ShowDialog() == DialogResult.OK)
 				{
 					ExportGridToExcel(grid, sfd.FileName);
-					ShowSuccessTip("导出成功");
+					this.ShowSuccessTip("导出成功");
 				}
 			}
 		}

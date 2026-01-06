@@ -7,7 +7,7 @@ namespace RemoteControl.UI
 {
     public partial class FrmTestMode : UIForm
     {
-        private Timer testTimer;
+        private System.Windows.Forms.Timer testTimer;
         private int testCounter = 0;
         
         public FrmTestMode()
@@ -26,7 +26,7 @@ namespace RemoteControl.UI
             this.ShowTitle = true;
             
             // 初始化测试定时器
-            testTimer = new Timer();
+            testTimer = new System.Windows.Forms.Timer();
             testTimer.Interval = 1000;
             testTimer.Tick += TestTimer_Tick;
             

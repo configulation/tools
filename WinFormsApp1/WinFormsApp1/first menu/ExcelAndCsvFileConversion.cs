@@ -131,12 +131,12 @@ namespace WinFormsApp1.first_menu
             string dst = txtOutputDir.Text?.Trim();
             if (string.IsNullOrWhiteSpace(src) || !Directory.Exists(src))
             {
-                ShowWarningTip("请选择有效的源文件夹");
+                this.ShowWarningTip("请选择有效的源文件夹");
                 return;
             }
             if (string.IsNullOrWhiteSpace(dst))
             {
-                ShowWarningTip("请选择有效的输出文件夹");
+                this.ShowWarningTip("请选择有效的输出文件夹");
                 return;
             }
             Directory.CreateDirectory(dst);
@@ -164,11 +164,11 @@ namespace WinFormsApp1.first_menu
                     Encoding enc = GetEncoding();
                     await Task.Run(() => ConvertAllCsvToExcel(src, dst, includeSub, xlsx, combine, sep, enc));
                 }
-                ShowSuccessTip("转换完成");
+                this.ShowSuccessTip("转换完成");
             }
             catch (Exception ex)
             {
-                ShowErrorTip($"转换失败: {ex.Message}");
+                this.ShowErrorTip($"转换失败: {ex.Message}");
                 Log($"[错误] {ex}");
             }
             finally
@@ -242,11 +242,11 @@ namespace WinFormsApp1.first_menu
                     bool xlsx = string.Equals(fmt, ".xlsx", StringComparison.OrdinalIgnoreCase);
                     await Task.Run(() => ConvertCsvFileToExcel(selectedFile, outputDir, xlsx, separator, encoding));
                 }
-                ShowSuccessTip("单文件转换完成");
+                this.ShowSuccessTip("单文件转换完成");
             }
             catch (Exception ex)
             {
-                ShowErrorTip($"转换失败: {ex.Message}");
+                this.ShowErrorTip($"转换失败: {ex.Message}");
                 Log($"[错误] {ex}");
             }
             finally
@@ -492,7 +492,9 @@ namespace WinFormsApp1.first_menu
 
         private IEnumerable<List<string>> ReadCsvRows(string file, char separator, Encoding encoding)
         {
-            using (var sr = new StreamReader(file, encoding, true))
+            // 先尝试检测文件编码
+            Encoding detectedEncoding = DetectFileEncoding(file, encoding);
+            using (var sr = new StreamReader(file, detectedEncoding))
             {
                 string line;
                 while ((line = sr.ReadLine()) != null)
@@ -500,6 +502,29 @@ namespace WinFormsApp1.first_menu
                     yield return ParseCsvLine(line, separator);
                 }
             }
+        }
+
+        /// <summary>
+        /// 检测文件编码，优先检测 BOM，否则使用用户指定的编码
+        /// </summary>
+        private Encoding DetectFileEncoding(string file, Encoding fallbackEncoding)
+        {
+            byte[] bom = new byte[4];
+            using (var fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                fs.Read(bom, 0, 4);
+            }
+
+            // 检测 BOM
+            if (bom[0] == 0xEF && bom[1] == 0xBB && bom[2] == 0xBF)
+                return new UTF8Encoding(true);
+            if (bom[0] == 0xFF && bom[1] == 0xFE)
+                return Encoding.Unicode; // UTF-16 LE
+            if (bom[0] == 0xFE && bom[1] == 0xFF)
+                return Encoding.BigEndianUnicode; // UTF-16 BE
+
+            // 没有 BOM，使用用户选择的编码
+            return fallbackEncoding;
         }
 
         private List<string> ParseCsvLine(string line, char separator)

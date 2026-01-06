@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RemoteControl.RelayServer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b96627280131adae7ec761c004174c3083d9e5bb")]
 [assembly: System.Reflection.AssemblyProductAttribute("RemoteControl.RelayServer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RemoteControl.RelayServer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

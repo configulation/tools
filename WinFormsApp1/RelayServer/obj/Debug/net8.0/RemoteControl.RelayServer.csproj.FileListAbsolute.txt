@@ -12,3 +12,4 @@ D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\Relay
 D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\RelayServer\obj\Debug\net8.0\RemoteControl.RelayServer.pdb
 D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\RelayServer\obj\Debug\net8.0\RemoteControl.RelayServer.genruntimeconfig.cache
 D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\RelayServer\obj\Debug\net8.0\ref\RemoteControl.RelayServer.dll
+D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\RelayServer\obj\Debug\net8.0\RemoteControl.RelayServer.sourcelink.json

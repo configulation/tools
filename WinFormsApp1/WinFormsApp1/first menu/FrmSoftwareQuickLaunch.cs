@@ -123,7 +123,7 @@ namespace WinFormsApp1.first_menu
             }
             catch (Exception ex)
             {
-                ShowErrorTip("加载配置失败：" + ex.Message);
+                this.ShowErrorTip("加载配置失败：" + ex.Message);
                 AppendLog("加载配置失败：" + ex.Message);
             }
             finally
@@ -170,11 +170,11 @@ namespace WinFormsApp1.first_menu
                 string json = JsonConvert.SerializeObject(list, Formatting.Indented);
                 await Task.Run(() => File.WriteAllText(ConfigFullPath, json, Encoding.UTF8));
                 AppendLog("配置已保存。");
-                ShowSuccessTip("配置保存成功");
+                this.ShowSuccessTip("配置保存成功");
             }
             catch (Exception ex)
             {
-                ShowErrorTip("保存配置失败：" + ex.Message);
+                this.ShowErrorTip("保存配置失败：" + ex.Message);
                 AppendLog("保存配置失败：" + ex.Message);
             }
         }
@@ -219,7 +219,7 @@ namespace WinFormsApp1.first_menu
             }
             catch (Exception ex)
             {
-                ShowErrorTip("打开配置位置失败：" + ex.Message);
+                this.ShowErrorTip("打开配置位置失败：" + ex.Message);
             }
         }
 
@@ -228,7 +228,7 @@ namespace WinFormsApp1.first_menu
             var targets = softwareItems.Where(x => x.AutoLaunch).ToList();
             if (targets.Count == 0)
             {
-                ShowWarningTip("没有勾选自动启动的软件。");
+                this.ShowWarningTip("没有勾选自动启动的软件。");
                 return;
             }
             await LaunchSoftwareListAsync(targets);
@@ -239,7 +239,7 @@ namespace WinFormsApp1.first_menu
             var targets = softwareItems.Where(x => !string.IsNullOrWhiteSpace(x.Path)).ToList();
             if (targets.Count == 0)
             {
-                ShowWarningTip("列表为空，没有可启动的软件。");
+                this.ShowWarningTip("列表为空，没有可启动的软件。");
                 return;
             }
             await LaunchSoftwareListAsync(targets);
@@ -258,14 +258,14 @@ namespace WinFormsApp1.first_menu
 
             if (selected.Count == 0)
             {
-                ShowWarningTip("请先选择需要启动的行。");
+                this.ShowWarningTip("请先选择需要启动的行。");
                 return;
             }
 
             selected = selected.Where(x => !string.IsNullOrWhiteSpace(x.Path)).ToList();
             if (selected.Count == 0)
             {
-                ShowWarningTip("所选行没有有效的路径。");
+                this.ShowWarningTip("所选行没有有效的路径。");
                 return;
             }
 

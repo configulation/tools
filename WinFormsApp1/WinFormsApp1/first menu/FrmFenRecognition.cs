@@ -187,7 +187,7 @@ namespace WinFormsApp1.first_menu
             catch (Exception ex)
             {
                 AppendLog($"加载图片失败: {ex.Message}");
-                ShowWarningTip("无法加载图片，请确认文件未被占用。");
+                this.ShowWarningTip("无法加载图片，请确认文件未被占用。");
             }
         }
 
@@ -196,7 +196,7 @@ namespace WinFormsApp1.first_menu
             string path = txtImagePath.Text.Trim();
             if (!File.Exists(path))
             {
-                ShowWarningTip("请选择已存在的图片文件。");
+                this.ShowWarningTip("请选择已存在的图片文件。");
                 return;
             }
 
@@ -212,7 +212,7 @@ namespace WinFormsApp1.first_menu
             catch (Exception ex)
             {
                 AppendLog($"打开文件所在位置失败: {ex.Message}");
-                ShowWarningTip("无法打开资源管理器。");
+                this.ShowWarningTip("无法打开资源管理器。");
             }
         }
 
@@ -221,14 +221,14 @@ namespace WinFormsApp1.first_menu
             string imagePath = txtImagePath.Text.Trim();
             if (!File.Exists(imagePath))
             {
-                ShowWarningTip("请先选择需要识别的棋盘图片。");
+                this.ShowWarningTip("请先选择需要识别的棋盘图片。");
                 return;
             }
 
             string urlText = txtServerUrl.Text.Trim();
             if (!Uri.TryCreate(urlText, UriKind.Absolute, out var requestUri))
             {
-                ShowWarningTip("请输入有效的识别服务地址。");
+                this.ShowWarningTip("请输入有效的识别服务地址。");
                 return;
             }
 
@@ -245,7 +245,7 @@ namespace WinFormsApp1.first_menu
                 }
                 catch (Exception ex)
                 {
-                    ShowWarningTip($"识别参数不是有效的 JSON: {ex.Message}");
+                    this.ShowWarningTip($"识别参数不是有效的 JSON: {ex.Message}");
                     return;
                 }
             }
@@ -262,7 +262,7 @@ namespace WinFormsApp1.first_menu
             {
                 AppendLog($"识别失败: {ex.Message}");
                 string message = ex.Message.Length > 180 ? ex.Message.Substring(0, 180) + "..." : ex.Message;
-                ShowErrorTip(message);
+                this.ShowErrorTip(message);
             }
             finally
             {
@@ -305,7 +305,7 @@ namespace WinFormsApp1.first_menu
             if (responseJson == null)
             {
                 AppendLog("识别返回空结果。");
-                ShowWarningTip("识别返回结果为空。");
+                this.ShowWarningTip("识别返回结果为空。");
                 return;
             }
 
@@ -314,7 +314,7 @@ namespace WinFormsApp1.first_menu
             {
                 string message = responseJson.Value<string>("message") ?? "识别失败";
                 AppendLog("识别失败: " + message);
-                ShowWarningTip(message);
+                this.ShowWarningTip(message);
                 return;
             }
 
@@ -322,7 +322,7 @@ namespace WinFormsApp1.first_menu
             if (resultToken == null)
             {
                 AppendLog("识别结果缺少 result 字段。");
-                ShowWarningTip("识别结果格式不符合预期。");
+                this.ShowWarningTip("识别结果格式不符合预期。");
                 return;
             }
 
@@ -343,7 +343,7 @@ namespace WinFormsApp1.first_menu
                 AppendLog("FEN: " + fen);
             }
 
-            ShowSuccessTip("识别完成");
+            this.ShowSuccessTip("识别完成");
         }
 
         private void btnCopyFen_Click(object sender, EventArgs e)
@@ -351,19 +351,19 @@ namespace WinFormsApp1.first_menu
             string fen = txtFen.Text.Trim();
             if (string.IsNullOrEmpty(fen))
             {
-                ShowWarningTip("当前没有可复制的 FEN 结果。");
+                this.ShowWarningTip("当前没有可复制的 FEN 结果。");
                 return;
             }
 
             try
             {
                 Clipboard.SetText(fen);
-                ShowSuccessTip("FEN 已复制到剪贴板");
+                this.ShowSuccessTip("FEN 已复制到剪贴板");
             }
             catch (Exception ex)
             {
                 AppendLog($"复制 FEN 失败: {ex.Message}");
-                ShowWarningTip("复制失败，请手动选择文本复制。");
+                this.ShowWarningTip("复制失败，请手动选择文本复制。");
             }
         }
 

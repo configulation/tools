@@ -61,6 +61,78 @@ namespace WinFormsApp1.first_menu.RemoteControl
             InitializeRemoteControl();
 
             InitTopBarLayout();
+
+            this.Resize += FrmRemoteControl_Resize;
+            this.Load += FrmRemoteControl_Load;
+        }
+
+        private void FrmRemoteControl_Load(object sender, EventArgs e)
+        {
+            AdjustPanelLeftLayout();
+            AdjustRightPanelLayout();
+        }
+
+        private void FrmRemoteControl_Resize(object sender, EventArgs e)
+        {
+            AdjustPanelLeftLayout();
+            AdjustRightPanelLayout();
+        }
+
+        private void AdjustRightPanelLayout()
+        {
+            if (panelMain == null || panelBottom == null || panelTop == null || panelLeft == null)
+            {
+                return;
+            }
+
+            int availableHeight = this.ClientSize.Height - panelTop.Height;
+            if (availableHeight <= 0)
+            {
+                return;
+            }
+
+            int logHeight = Math.Max(80, availableHeight / 4);
+            logHeight = Math.Min(logHeight, 200);
+
+            panelBottom.Height = logHeight;
+        }
+
+        private void AdjustPanelLeftLayout()
+        {
+            if (panelLeft == null || groupBoxControl == null || groupBoxSettings == null)
+            {
+                return;
+            }
+
+            int availableHeight = panelLeft.ClientSize.Height - panelLeft.Padding.Top - panelLeft.Padding.Bottom;
+            int controlIdealHeight = 250;
+            int settingsIdealHeight = 100;
+            int totalNeededHeight = controlIdealHeight + settingsIdealHeight;
+
+            if (availableHeight >= totalNeededHeight)
+            {
+                groupBoxControl.Height = controlIdealHeight;
+                groupBoxSettings.Height = settingsIdealHeight;
+            }
+            else if (availableHeight >= 250)
+            {
+                groupBoxSettings.Height = settingsIdealHeight;
+                groupBoxControl.Height = availableHeight - settingsIdealHeight;
+            }
+            else if (availableHeight >= 180)
+            {
+                groupBoxSettings.Height = 80;
+                groupBoxControl.Height = availableHeight - 80;
+            }
+            else
+            {
+                groupBoxControl.Height = Math.Max(120, availableHeight);
+                groupBoxSettings.Height = 0;
+                groupBoxSettings.Visible = false;
+                return;
+            }
+
+            groupBoxSettings.Visible = true;
         }
 
         private void SafeBeginInvoke(Action action)
