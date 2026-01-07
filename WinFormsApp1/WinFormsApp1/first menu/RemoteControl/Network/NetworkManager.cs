@@ -401,6 +401,9 @@ namespace WinFormsApp1.first_menu.RemoteControl
             }
         }
 
+        //ReadExact(stream, buffer, offset,  count)
+        //            流    数组   起始位置  读取字节数
+        // 意思是：从stream读取count个字节，写入buffer数组，从buffer[offset]位置开始写
         private static bool ReadExact(NetworkStream stream, byte[] buffer, int offset, int count)
         {
             int totalRead = 0;
