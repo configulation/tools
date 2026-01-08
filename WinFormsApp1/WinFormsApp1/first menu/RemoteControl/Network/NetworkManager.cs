@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.IO;
+using System.IO.Compression;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -51,10 +52,14 @@ namespace WinFormsApp1.first_menu.RemoteControl
             MouseClick = 3,
             KeyPress = 4,
             Disconnect = 5,
-            ScreenInfo = 6,      // 屏幕信息（分辨率等）
+            ScreenInfo = 6,
             Heartbeat = 7,
-            ConnectionInfo = 8   // 连接信息（设备码等）
+            ConnectionInfo = 8,
+            ScreenDataCompressed = 9  // 压缩的屏幕数据（公网优化）
         }
+        
+        // 压缩阈值：超过此大小才压缩（小数据压缩反而更大）
+        private const int CompressionThreshold = 1024;
 
         private const string RelayPairedFlag = "PAIRED";
 
@@ -427,18 +432,23 @@ namespace WinFormsApp1.first_menu.RemoteControl
             switch (type)
             {
                 case MessageType.ScreenData:
+                case MessageType.ScreenDataCompressed:
                     receivedScreenFrames++;
                     lastScreenRecvAt = DateTime.Now;
+                    
+                    // 如果是压缩数据，先解压
+                    byte[] screenData = (type == MessageType.ScreenDataCompressed) ? Decompress(data) : data;
+                    
                     if (receivedScreenFrames == 1 || receivedScreenFrames % 100 == 0)
                     {
-                        Console.WriteLine($"[ScreenData] recv frames={receivedScreenFrames} bytes={(data?.Length ?? 0)} at={lastScreenRecvAt:HH:mm:ss.fff}");
+                        Console.WriteLine($"[ScreenData] recv frames={receivedScreenFrames} compressed={type == MessageType.ScreenDataCompressed} bytes={data?.Length ?? 0}→{screenData?.Length ?? 0} at={lastScreenRecvAt:HH:mm:ss.fff}");
                     }
 
                     if (receivedScreenFrames == 1)
                     {
-                        OnConnectionStatusChanged?.Invoke(true, $"已收到首帧屏幕数据，大小={(data?.Length ?? 0)} 字节");
+                        OnConnectionStatusChanged?.Invoke(true, $"已收到首帧屏幕数据，大小={screenData?.Length ?? 0} 字节");
                     }
-                    OnScreenDataReceived?.Invoke(data);
+                    OnScreenDataReceived?.Invoke(screenData);
                     break;
                     
                 case MessageType.MouseMove:
@@ -553,24 +563,89 @@ namespace WinFormsApp1.first_menu.RemoteControl
         }
 
         /// <summary>
-        /// 发送屏幕数据
+        /// 发送屏幕数据（公网自动压缩优化）
         /// </summary>
         public async Task SendScreenDataAsync(byte[] screenData)
         {
-            if (screenData != null && networkStream != null && networkStream.CanWrite)
-            {
-                sentScreenFrames++;
-                lastScreenSendAt = DateTime.Now;
-                if (sentScreenFrames == 1 || sentScreenFrames % 100 == 0)
-                {
-                    Console.WriteLine($"[ScreenData] send frames={sentScreenFrames} bytes={screenData.Length} at={lastScreenSendAt:HH:mm:ss.fff}");
-                }
+            if (screenData == null || networkStream == null || !networkStream.CanWrite)
+                return;
 
-                if (sentScreenFrames == 1)
+            sentScreenFrames++;
+            lastScreenSendAt = DateTime.Now;
+
+            // 公网模式(中继)且数据较大时压缩，局域网直连不压缩
+            bool shouldCompress = relayEnabled && screenData.Length > CompressionThreshold;
+            
+            byte[] dataToSend;
+            MessageType msgType;
+            
+            if (shouldCompress)
+            {
+                dataToSend = Compress(screenData);
+                msgType = MessageType.ScreenDataCompressed;
+            }
+            else
+            {
+                dataToSend = screenData;
+                msgType = MessageType.ScreenData;
+            }
+
+            if (sentScreenFrames == 1 || sentScreenFrames % 100 == 0)
+            {
+                Console.WriteLine($"[ScreenData] send frames={sentScreenFrames} compressed={shouldCompress} bytes={screenData.Length}→{dataToSend.Length} at={lastScreenSendAt:HH:mm:ss.fff}");
+            }
+
+            if (sentScreenFrames == 1)
+            {
+                OnConnectionStatusChanged?.Invoke(true, $"已发送首帧屏幕数据，原始={screenData.Length}字节，发送={dataToSend.Length}字节");
+            }
+            
+            await SendMessageAsync(msgType, dataToSend);
+        }
+
+        /// <summary>
+        /// 压缩数据（GZip快速模式）
+        /// </summary>
+        private static byte[] Compress(byte[] data)
+        {
+            using (var output = new MemoryStream())
+            {
+                // 先写入原始长度（4字节），用于解压时分配缓冲区
+                output.Write(BitConverter.GetBytes(data.Length), 0, 4);
+                
+                using (var gzip = new GZipStream(output, CompressionLevel.Fastest, leaveOpen: true))
                 {
-                    OnConnectionStatusChanged?.Invoke(true, $"已发送首帧屏幕数据，大小={screenData.Length} 字节");
+                    gzip.Write(data, 0, data.Length);
                 }
-                await SendMessageAsync(MessageType.ScreenData, screenData);
+                return output.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// 解压数据
+        /// </summary>
+        private static byte[] Decompress(byte[] compressedData)
+        {
+            using (var input = new MemoryStream(compressedData))
+            {
+                // 读取原始长度
+                var lengthBytes = new byte[4];
+                input.Read(lengthBytes, 0, 4);
+                int originalLength = BitConverter.ToInt32(lengthBytes, 0);
+
+                // 解压
+                var result = new byte[originalLength];
+                using (var gzip = new GZipStream(input, CompressionMode.Decompress))
+                {
+                    int totalRead = 0;
+                    while (totalRead < originalLength)
+                    {
+                        int read = gzip.Read(result, totalRead, originalLength - totalRead);
+                        if (read <= 0) break;
+                        totalRead += read;
+                    }
+                }
+                return result;
             }
         }
 

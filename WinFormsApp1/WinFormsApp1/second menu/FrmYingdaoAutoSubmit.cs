@@ -19,6 +19,7 @@ namespace WinFormsApp1.second_menu
 		private bool isRunning;
 		private bool isLoadingSettings;
 		private bool autoStartEnabled = true;
+		private System.Windows.Forms.Timer dailyTimer;
 
 		public FrmYingdaoAutoSubmit()
 		{
@@ -27,16 +28,53 @@ namespace WinFormsApp1.second_menu
 			string cfgDir = Path.Combine(Application.StartupPath, "Config");
 			stateFilePath = Path.Combine(cfgDir, "yingdao_auto_submit_state.json");
 			LoadSettingsIntoUI();
+			
+			// 初始化定时器，每分钟检查一次
+			dailyTimer = new System.Windows.Forms.Timer();
+			dailyTimer.Interval = 60000; // 1分钟
+			dailyTimer.Tick += DailyTimer_Tick;
 		}
 
 		private async void FrmYingdaoAutoSubmit_Load(object sender, EventArgs e)
 		{
-			// if (!autoStartEnabled)
-			// {
-			// 	AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 已关闭自动执行");
-			// 	return;
-			// }
-			// await RunAsync(false);
+			dailyTimer.Start();
+			AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 定时器已启动，每分钟检查执行条件");
+			
+			// 启动时立即检查一次
+			if (autoStartEnabled && ShouldRunNow())
+			{
+				AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 启动时检测到需要执行");
+				await RunAsync(false);
+			}
+		}
+
+		private async void DailyTimer_Tick(object sender, EventArgs e)
+		{
+			if (!autoStartEnabled) return;
+			if (!ShouldRunNow()) return;
+			
+			var cfg = LoadConfig();
+			string today = DateTime.Today.ToString("yyyy-MM-dd");
+			if (cfg != null && string.Equals(cfg.LastSubmittedDate, today, StringComparison.OrdinalIgnoreCase))
+			{
+				return; // 今天已执行过
+			}
+			
+			AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 定时触发自动执行");
+			await RunAsync(false);
+		}
+
+		/// <summary>
+		/// 判断当前是否在可执行时间范围内（0:00 - 13:30）
+		/// 抽签截止14:00，提前30分钟确保有足够时间
+		/// </summary>
+		private bool ShouldRunNow()
+		{
+			var now = DateTime.Now;
+			var startTime = now.Date; // 0:00
+			var endTime = now.Date.AddHours(13).AddMinutes(30); // 13:30
+			
+			return now >= startTime && now <= endTime;
 		}
 
 		private async void btnRun_Click(object sender, EventArgs e)
@@ -338,10 +376,7 @@ namespace WinFormsApp1.second_menu
 		private async Task FillFormAsync()
 		{
 			var cfg = LoadConfig();
-			if (cfg == null)
-			{
-				return;
-			}
+			if (cfg == null) return;
 
 			var employeeId = JsEscape(cfg.EmployeeId);
 			var phone = JsEscape(cfg.Phone);
@@ -356,109 +391,251 @@ namespace WinFormsApp1.second_menu
 				return;
 			}
 
+			// 先选择厂区（如果有）
+			if (!string.IsNullOrWhiteSpace(factory))
+			{
+				await SelectFactoryAsync(factory);
+				await Task.Delay(500);
+			}
+
+			// 填写员工号并等待姓名加载
+			if (!string.IsNullOrWhiteSpace(employeeId))
+			{
+				await SetInputValueAsync("txtEmployeeID", employeeId);
+				AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 已填写员工号，等待姓名加载...");
+				await Task.Delay(3500); // 等待员工姓名加载
+			}
+
+			// 填写手机号
+			if (!string.IsNullOrWhiteSpace(phone))
+			{
+				await SetInputValueAsync("txtPhoneNo", phone);
+				await Task.Delay(300);
+			}
+
+			// 填写车牌号
+			if (!string.IsNullOrWhiteSpace(carNo))
+			{
+				await SetInputValueAsync("txtCarNo", carNo);
+				await Task.Delay(300);
+			}
+		}
+
+		/// <summary>
+		/// 使用 React 兼容方式设置输入框值
+		/// </summary>
+		private async Task SetInputValueAsync(string widgetId, string value)
+		{
 			string script = $@"
-				(function () {{
-					function setInputByWidgetId(widgetId, value) {{
-						if (!value) return;
-						var selector = '[data-widget-id=' + JSON.stringify(widgetId) + ']';
-						var root = document.querySelector(selector);
-						if (!root) return;
-						var input = root.querySelector('input');
-						if (!input) return;
-						input.focus();
-						input.value = value;
-						var ev = new Event('input', {{ bubbles: true }});
-						input.dispatchEvent(ev);
-						var blurEv = new Event('blur', {{ bubbles: true }});
-						input.dispatchEvent(blurEv);
-					}}
+				(function() {{
+					var selector = '[data-widget-id=""{widgetId}""]';
+					var root = document.querySelector(selector);
+					if (!root) return false;
+					var input = root.querySelector('input');
+					if (!input) return false;
 
-					function openFactoryField() {{
-						var nodes = document.querySelectorAll('*');
-						for (var i = 0; i < nodes.length; i++) {{
-							var el = nodes[i];
-							var text = (el.innerText || el.textContent || '').replace(/\s+/g, '');
-							if (!text) continue;
-							if (text.indexOf('厂区*') >= 0 || text === '厂区' || text.indexOf('厂区请选择') >= 0) {{
-								var clickable = el.closest ? el.closest('.adm-list-item') : null;
-								if (!clickable) clickable = el;
-								clickable.click();
-								break;
-							}}
-						}}
-					}}
+					// React 兼容：使用原生 setter 设置值
+					var nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+					nativeInputValueSetter.call(input, '{value}');
 
-					function selectFactoryByName(name) {{
-						if (!name) return;
-						var popup = document.querySelector('.adm-popup-body');
-						if (!popup) return;
+					// 触发 React 能识别的事件
+					var inputEvent = new Event('input', {{ bubbles: true, cancelable: true }});
+					input.dispatchEvent(inputEvent);
 
-						function normalize(text) {{
-							if (!text) return '';
-							return text.replace(/\s+/g, '').trim();
-						}}
+					var changeEvent = new Event('change', {{ bubbles: true, cancelable: true }});
+					input.dispatchEvent(changeEvent);
 
-						var target = normalize(name);
-						var rows = popup.querySelectorAll('.flex.items-center.justify-between');
-						for (var i = 0; i < rows.length; i++) {{
-							var row = rows[i];
-							var textEl = row.querySelector('.flex-auto');
-							if (!textEl) continue;
-							var text = normalize(textEl.innerText || textEl.textContent);
-							if (text === target) {{
-								var checkboxLabel = row.querySelector('.adm-checkbox');
-								if (checkboxLabel) {{
-									checkboxLabel.click();
-								}} else {{
-									row.click();
-								}}
-								break;
-							}}
-						}}
-
-						var header = popup.querySelector('.flex.p-2.justify-between.items-center');
-						if (!header) header = popup;
-						var buttons = header.querySelectorAll('.text-lg');
-						for (var j = 0; j < buttons.length; j++) {{
-							var b = buttons[j];
-							var txt = (b.innerText || b.textContent || '').trim();
-							if (txt === '确定') {{
-								b.click();
-								break;
-							}}
-						}}
-					}}
-
-					function openFactoryField() {{
-						var nodes = document.querySelectorAll('*');
-						for (var i = 0; i < nodes.length; i++) {{
-							var el = nodes[i];
-							var text = (el.innerText || el.textContent || '').replace(/\s+/g, '');
-							if (!text) continue;
-							if (text.indexOf('厂区*') >= 0 || text === '厂区' || text.indexOf('厂区请选择') >= 0) {{
-								var clickable = el.closest ? el.closest('.adm-list-item') : null;
-								if (!clickable) clickable = el;
-								clickable.click();
-								break;
-							}}
-						}}
-					}}
-
-					setInputByWidgetId('txtEmployeeID', '{employeeId}');
-					setInputByWidgetId('txtPhoneNo', '{phone}');
-					setInputByWidgetId('txtCarNo', '{carNo}');
-
-					if ('{factory}') {{
-						setTimeout(function () {{
-							openFactoryField();
-							setTimeout(function () {{
-								selectFactoryByName('{factory}');
-							}}, 500);
-						}}, 0);
-					}}
+					// 模拟失焦以触发验证
+					input.blur();
+					return true;
 				}})();";
 
 			await web.ExecuteScriptAsync(script);
+		}
+
+		/// <summary>
+		/// 选择厂区（Ant Design Mobile Checkbox 弹窗）
+		/// </summary>
+		private async Task SelectFactoryAsync(string factoryName)
+		{
+			AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 开始选择厂区: {factoryName}");
+
+			// 1. 点击厂区选择框打开弹窗 - 需要点击内部的选择框区域
+			string openScript = @"
+				(function() {
+					var root = document.querySelector('[data-widget-id=""cmbFty""]');
+					if (!root) return 'no_widget';
+					
+					// 查找内部可点击的选择框
+					var selectBox = root.querySelector('.min-h-12.border');
+					if (selectBox) {
+						selectBox.click();
+						return 'clicked_selectbox';
+					}
+					
+					// 备用：查找包含下拉箭头的区域
+					var arrowArea = root.querySelector('.anticon-down');
+					if (arrowArea) {
+						var clickTarget = arrowArea.closest('.min-h-12') || arrowArea.parentElement;
+						if (clickTarget) {
+							clickTarget.click();
+							return 'clicked_arrow_area';
+						}
+					}
+					
+					// 备用：点击整个widget
+					root.click();
+					return 'clicked_root';
+				})();";
+
+			string openResult = await web.ExecuteScriptAsync(openScript);
+			AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 打开弹窗: {openResult}");
+
+			// 2. 等待弹窗出现（最多等待 5 秒）
+			string waitResult = "timeout";
+			for (int i = 0; i < 25; i++)
+			{
+				await Task.Delay(200);
+				string checkScript = @"
+					(function() {
+						var popup = document.querySelector('.adm-popup-body');
+						if (popup && popup.offsetHeight > 0) {
+							// 检查弹窗内是否有 checkbox 选项
+							var checkboxes = popup.querySelectorAll('label.adm-checkbox');
+							return 'visible:' + checkboxes.length + '_options';
+						}
+						return 'hidden';
+					})();";
+				waitResult = await web.ExecuteScriptAsync(checkScript);
+				if (waitResult.Contains("visible"))
+				{
+					AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 弹窗已出现 (等待 {(i + 1) * 200}ms): {waitResult}");
+					break;
+				}
+			}
+			if (!waitResult.Contains("visible"))
+			{
+				AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 弹窗等待超时，尝试直接查找选项");
+			}
+
+			await Task.Delay(500); // 额外等待动画完成
+
+			// 3. 选择厂区 - 根据实际HTML结构：
+			// <div class="flex items-center justify-between px-4 py-4 border-b border-borderColor gap-2">
+			//   <label class="adm-checkbox"><input type="checkbox">...</label>
+			//   <div class="flex-auto">总厂</div>
+			// </div>
+			string selectScript = $@"
+				(function() {{
+					var target = '{factoryName}'.trim();
+					var popup = document.querySelector('.adm-popup-body');
+					if (!popup) return 'no_popup';
+					
+					// 调试：输出弹窗内所有文本
+					var allText = popup.innerText;
+					console.log('弹窗内容:', allText);
+					
+					// 方法1：查找弹窗内所有行（包含 checkbox 的行）
+					var rows = popup.querySelectorAll('.flex.items-center.justify-between');
+					console.log('找到行数:', rows.length);
+					
+					for (var i = 0; i < rows.length; i++) {{
+						var row = rows[i];
+						// 查找行内的 flex-auto div（包含厂区名称）
+						var nameDiv = row.querySelector('.flex-auto');
+						if (nameDiv) {{
+							var text = (nameDiv.innerText || nameDiv.textContent || '').trim();
+							console.log('行' + i + '文本:', text);
+							if (text === target) {{
+								// 找到匹配的厂区，点击 checkbox
+								var checkbox = row.querySelector('input[type=""checkbox""]');
+								if (checkbox) {{
+									checkbox.click();
+									return 'clicked_checkbox:' + text;
+								}}
+								// 备用：点击 label
+								var label = row.querySelector('label.adm-checkbox');
+								if (label) {{
+									label.click();
+									return 'clicked_label:' + text;
+								}}
+								// 备用：点击整行
+								row.click();
+								return 'clicked_row:' + text;
+							}}
+						}}
+					}}
+					
+					// 方法2：直接查找所有 flex-auto div
+					var flexAutoDivs = popup.querySelectorAll('.flex-auto');
+					console.log('找到flex-auto数:', flexAutoDivs.length);
+					
+					for (var j = 0; j < flexAutoDivs.length; j++) {{
+						var div = flexAutoDivs[j];
+						var text = (div.innerText || div.textContent || '').trim();
+						if (text === target) {{
+							var parent = div.parentElement;
+							if (parent) {{
+								var checkbox = parent.querySelector('input[type=""checkbox""]');
+								if (checkbox) {{
+									checkbox.click();
+									return 'method2_clicked_checkbox:' + text;
+								}}
+							}}
+						}}
+					}}
+					
+					// 方法3：遍历所有 adm-checkbox
+					var checkboxLabels = popup.querySelectorAll('label.adm-checkbox');
+					console.log('找到checkbox数:', checkboxLabels.length);
+					
+					for (var k = 0; k < checkboxLabels.length; k++) {{
+						var label = checkboxLabels[k];
+						var parent = label.parentElement;
+						if (parent) {{
+							var nameDiv = parent.querySelector('.flex-auto');
+							if (nameDiv) {{
+								var text = (nameDiv.innerText || nameDiv.textContent || '').trim();
+								if (text === target) {{
+									var checkbox = label.querySelector('input[type=""checkbox""]');
+									if (checkbox) {{
+										checkbox.click();
+										return 'method3_clicked:' + text;
+									}}
+								}}
+							}}
+						}}
+					}}
+					
+					return 'not_found:target=' + target + ',rows=' + rows.length;
+				}})();";
+
+			string selectResult = await web.ExecuteScriptAsync(selectScript);
+			AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 厂区选择结果: {selectResult}");
+			await Task.Delay(500);
+
+			// 4. 点击确定按钮 - 根据实际HTML：<div class="text-lg">确定</div>
+			string confirmScript = @"
+				(function() {
+					var popup = document.querySelector('.adm-popup-body');
+					if (!popup) return 'no_popup_for_confirm';
+					
+					// 查找弹窗顶部的确定按钮
+					var textLgDivs = popup.querySelectorAll('.text-lg');
+					for (var i = 0; i < textLgDivs.length; i++) {
+						var div = textLgDivs[i];
+						var txt = (div.innerText || div.textContent || '').trim();
+						if (txt === '确定' || txt === '确认') {
+							div.click();
+							return 'confirmed:' + txt;
+						}
+					}
+					
+					return 'no_confirm_btn:found_' + textLgDivs.length + '_text-lg';
+				})();";
+
+			string confirmResult = await web.ExecuteScriptAsync(confirmScript);
+			AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 确定按钮: {confirmResult}");
 		}
 
 		private static string GetProbeSubmitButtonScript()

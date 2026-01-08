@@ -53,3 +53,13 @@ WinFormsApp1/.vs/WinFormsApp1/FileContentIndex/ef80f54e-d639-4639-a8a5-3166b7089
 WinFormsApp1/.vs/WinFormsApp1/v17/.suo
 WinFormsApp1/.vs/WinFormsApp1/v17/DocumentLayout.backup.json
 WinFormsApp1/.vs/WinFormsApp1/v17/DocumentLayout.json
+# 忽略WebView2缓存文件
+WinFormsApp1/WinFormsApp1/bin/
+WinFormsApp1/WinFormsApp1/obj/
+# 或者更具体地
+**/bin/
+**/obj/
+**/.vs/
+**/*.user
+**/*.suo
+**/WebView2/

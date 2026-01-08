@@ -1,9 +1,9 @@
 ﻿{
   "AutoStartEnabled": true,
-  "Factory": "",
-  "EmployeeId": "",
-  "Phone": "",
-  "CarNo": "",
-  "LastSubmittedDate": null,
-  "LastResult": null
+  "Factory": "总厂",
+  "EmployeeId": "get0312254",
+  "Phone": "14718415694",
+  "CarNo": "粤S3C7K3",
+  "LastSubmittedDate": "2026-01-08",
+  "LastResult": "clicked"
 }
