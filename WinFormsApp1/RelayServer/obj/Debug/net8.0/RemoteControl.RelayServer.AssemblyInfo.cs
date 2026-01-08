@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RemoteControl.RelayServer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dd4d5be437cfe96579c12749a9d8a29700e58048")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7741b355e34551e296929c00a1ab00112cf2e7eb")]
 [assembly: System.Reflection.AssemblyProductAttribute("RemoteControl.RelayServer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RemoteControl.RelayServer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

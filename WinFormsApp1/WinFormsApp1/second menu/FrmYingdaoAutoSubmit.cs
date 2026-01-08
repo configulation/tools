@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Web.WebView2.Core;
-using Microsoft.Web.WebView2.WinForms;
 using Newtonsoft.Json;
 using Sunny.UI;
 
@@ -14,92 +16,445 @@ namespace WinFormsApp1.second_menu
 	{
 		private const string TargetUrl = "https://esquel.yingdaoapps.com/public/app/821296610254688256/%E8%BD%A6%E4%BD%8D%E6%8A%BD%E7%AD%BE/defaultPage";
 
-		private readonly string stateFilePath;
-		private bool hasAutoStarted;
+		private readonly string configFilePath;
+		private AppConfig config;
 		private bool isRunning;
 		private bool isLoadingSettings;
-		private bool autoStartEnabled = true;
 		private System.Windows.Forms.Timer dailyTimer;
+		private int currentUserIndex = -1;
 
 		public FrmYingdaoAutoSubmit()
 		{
 			InitializeComponent();
 
 			string cfgDir = Path.Combine(Application.StartupPath, "Config");
-			stateFilePath = Path.Combine(cfgDir, "yingdao_auto_submit_state.json");
-			LoadSettingsIntoUI();
+			configFilePath = Path.Combine(cfgDir, "yingdao_config.json");
 			
-			// 初始化定时器，每分钟检查一次
+			InitializeDataGridView();
+			LoadConfig();
+			LoadConfigToUI();
+			
+			// 初始化定时器
 			dailyTimer = new System.Windows.Forms.Timer();
 			dailyTimer.Interval = 60000; // 1分钟
 			dailyTimer.Tick += DailyTimer_Tick;
 		}
 
+		private void InitializeDataGridView()
+		{
+			dgvUsers.Columns.Clear();
+			dgvUsers.Columns.Add(new DataGridViewCheckBoxColumn
+			{
+				Name = "colEnabled",
+				HeaderText = "启用",
+				Width = 50
+			});
+			dgvUsers.Columns.Add(new DataGridViewTextBoxColumn
+			{
+				Name = "colFactory",
+				HeaderText = "厂区",
+				Width = 80
+			});
+			dgvUsers.Columns.Add(new DataGridViewTextBoxColumn
+			{
+				Name = "colEmployeeId",
+				HeaderText = "员工号",
+				Width = 100
+			});
+			dgvUsers.Columns.Add(new DataGridViewTextBoxColumn
+			{
+				Name = "colPhone",
+				HeaderText = "手机号",
+				Width = 120
+			});
+			dgvUsers.Columns.Add(new DataGridViewTextBoxColumn
+			{
+				Name = "colCarNo",
+				HeaderText = "车牌号",
+				Width = 100
+			});
+			dgvUsers.Columns.Add(new DataGridViewTextBoxColumn
+			{
+				Name = "colLastDate",
+				HeaderText = "上次执行",
+				Width = 100,
+				ReadOnly = true
+			});
+			dgvUsers.Columns.Add(new DataGridViewTextBoxColumn
+			{
+				Name = "colLastResult",
+				HeaderText = "执行结果",
+				Width = 80,
+				ReadOnly = true
+			});
+		}
+
 		private async void FrmYingdaoAutoSubmit_Load(object sender, EventArgs e)
 		{
 			dailyTimer.Start();
-			AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 定时器已启动，每分钟检查执行条件");
+			string daysDesc = GetEnabledDaysDescription();
+			AppendLog($"定时器已启动，每分钟检查执行条件（{daysDesc} 0:00-13:30）");
 			
-			// 启动时立即检查一次
-			if (autoStartEnabled && ShouldRunNow())
+			// 启动时检查
+			if (config.AutoStartEnabled && ShouldRunToday() && IsInTimeWindow())
 			{
-				AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 启动时检测到需要执行");
-				await RunAsync(false);
+				AppendLog("启动时检测到需要执行");
+				await RunAllUsersAsync();
 			}
 		}
 
 		private async void DailyTimer_Tick(object sender, EventArgs e)
 		{
-			if (!autoStartEnabled) return;
-			if (!ShouldRunNow()) return;
+			if (!config.AutoStartEnabled) return;
+			if (!ShouldRunToday()) return;
+			if (!IsInTimeWindow()) return;
 			
-			var cfg = LoadConfig();
+			// 检查是否有用户今天还没执行
 			string today = DateTime.Today.ToString("yyyy-MM-dd");
-			if (cfg != null && string.Equals(cfg.LastSubmittedDate, today, StringComparison.OrdinalIgnoreCase))
-			{
-				return; // 今天已执行过
-			}
+			bool hasUnfinished = config.Users.Any(u => u.Enabled && u.LastSubmittedDate != today);
 			
-			AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 定时触发自动执行");
-			await RunAsync(false);
+			if (hasUnfinished)
+			{
+				AppendLog("定时触发自动执行");
+				await RunAllUsersAsync();
+			}
+		}
+
+		/// <summary>
+		/// 判断今天是否需要抽签（根据配置的星期）
+		/// </summary>
+		private bool ShouldRunToday()
+		{
+			int dayOfWeek = (int)DateTime.Today.DayOfWeek;
+			return config.EnabledDays.Contains(dayOfWeek);
+		}
+
+		/// <summary>
+		/// 获取启用的星期描述
+		/// </summary>
+		private string GetEnabledDaysDescription()
+		{
+			string[] dayNames = { "周日", "周一", "周二", "周三", "周四", "周五", "周六" };
+			var enabledNames = config.EnabledDays.OrderBy(d => d).Select(d => dayNames[d]);
+			return string.Join("、", enabledNames);
 		}
 
 		/// <summary>
 		/// 判断当前是否在可执行时间范围内（0:00 - 13:30）
-		/// 抽签截止14:00，提前30分钟确保有足够时间
 		/// </summary>
-		private bool ShouldRunNow()
+		private bool IsInTimeWindow()
 		{
 			var now = DateTime.Now;
-			var startTime = now.Date; // 0:00
-			var endTime = now.Date.AddHours(13).AddMinutes(30); // 13:30
-			
-			return now >= startTime && now <= endTime;
+			var endTime = now.Date.AddHours(13).AddMinutes(30);
+			return now <= endTime;
 		}
 
 		private async void btnRun_Click(object sender, EventArgs e)
 		{
-			await RunAsync(true);
+			await RunAllUsersAsync();
+		}
+
+		private void btnAddUser_Click(object sender, EventArgs e)
+		{
+			dgvUsers.Rows.Add(true, "总厂", "", "", "", "", "");
+			AppendLog("已添加新用户行，请填写信息后点击保存");
+		}
+
+		private void btnDeleteUser_Click(object sender, EventArgs e)
+		{
+			if (dgvUsers.CurrentRow == null)
+			{
+				UIMessageTip.ShowWarning("请先选择要删除的用户");
+				return;
+			}
+			
+			int rowIndex = dgvUsers.CurrentRow.Index;
+			if (rowIndex >= 0 && !dgvUsers.CurrentRow.IsNewRow)
+			{
+				dgvUsers.Rows.RemoveAt(rowIndex);
+				AppendLog("已删除用户，请点击保存配置");
+			}
+		}
+
+		private void btnSaveConfig_Click(object sender, EventArgs e)
+		{
+			SaveUIToConfig();
+			SaveConfig();
+			UIMessageTip.ShowOk("配置已保存");
+			AppendLog("配置已保存到文件");
 		}
 
 		private void ChkAutoStart_CheckedChanged(object sender, EventArgs e)
 		{
 			if (isLoadingSettings) return;
-			autoStartEnabled = chkAutoStart.Checked;
-			var cfg = LoadConfig();
-			cfg.AutoStartEnabled = autoStartEnabled;
-			SaveConfig(cfg);
-			AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 自动执行已{(autoStartEnabled ? "开启" : "关闭")}");
+			config.AutoStartEnabled = chkAutoStart.Checked;
+			AppendLog($"自动执行已{(config.AutoStartEnabled ? "开启" : "关闭")}");
 		}
 
-		private void LoadSettingsIntoUI()
+		private void ChkDay_CheckedChanged(object sender, EventArgs e)
+		{
+			if (isLoadingSettings) return;
+			// 星期选择变化时自动保存
+			SaveDaysFromUI();
+			string daysDesc = GetEnabledDaysDescription();
+			AppendLog($"执行日期已更新：{daysDesc}");
+		}
+
+		private void SaveDaysFromUI()
+		{
+			config.EnabledDays.Clear();
+			if (chkSunday.Checked) config.EnabledDays.Add(0);
+			if (chkMonday.Checked) config.EnabledDays.Add(1);
+			if (chkTuesday.Checked) config.EnabledDays.Add(2);
+			if (chkWednesday.Checked) config.EnabledDays.Add(3);
+			if (chkThursday.Checked) config.EnabledDays.Add(4);
+			if (chkFriday.Checked) config.EnabledDays.Add(5);
+			if (chkSaturday.Checked) config.EnabledDays.Add(6);
+		}
+
+		private void LoadDaysToUI()
+		{
+			chkSunday.Checked = config.EnabledDays.Contains(0);
+			chkMonday.Checked = config.EnabledDays.Contains(1);
+			chkTuesday.Checked = config.EnabledDays.Contains(2);
+			chkWednesday.Checked = config.EnabledDays.Contains(3);
+			chkThursday.Checked = config.EnabledDays.Contains(4);
+			chkFriday.Checked = config.EnabledDays.Contains(5);
+			chkSaturday.Checked = config.EnabledDays.Contains(6);
+		}
+
+		private async Task RunAllUsersAsync()
+		{
+			if (isRunning)
+			{
+				AppendLog("已有任务在执行中，请稍候");
+				return;
+			}
+
+			if (!ShouldRunToday())
+			{
+				string daysDesc = GetEnabledDaysDescription();
+				AppendLog($"今天是{DateTime.Today.DayOfWeek}，不需要抽签（仅{daysDesc}）");
+				return;
+			}
+
+			if (!IsInTimeWindow())
+			{
+				AppendLog("当前时间超过13:30，已过抽签截止时间");
+				return;
+			}
+
+			isRunning = true;
+			btnRun.Enabled = false;
+
+			try
+			{
+				string today = DateTime.Today.ToString("yyyy-MM-dd");
+				var enabledUsers = config.Users.Where(u => u.Enabled).ToList();
+				
+				if (enabledUsers.Count == 0)
+				{
+					AppendLog("没有启用的用户");
+					return;
+				}
+
+				AppendLog($"开始执行，共 {enabledUsers.Count} 个用户");
+
+				for (int i = 0; i < enabledUsers.Count; i++)
+				{
+					var user = enabledUsers[i];
+					currentUserIndex = config.Users.IndexOf(user);
+					
+					if (user.LastSubmittedDate == today)
+					{
+						AppendLog($"用户 {user.EmployeeId} 今天已执行过，跳过");
+						continue;
+					}
+
+					AppendLog($"--- 开始处理用户 {i + 1}/{enabledUsers.Count}: {user.EmployeeId} ---");
+					
+					bool success = await RunSingleUserAsync(user);
+					
+					if (success)
+					{
+						user.LastSubmittedDate = today;
+						user.LastResult = "成功";
+					}
+					else
+					{
+						user.LastResult = "失败";
+					}
+					
+					// 更新UI
+					UpdateUserRowStatus(currentUserIndex, user);
+					SaveConfig();
+
+					// 用户之间间隔
+					if (i < enabledUsers.Count - 1)
+					{
+						AppendLog("等待5秒后处理下一个用户...");
+						await Task.Delay(5000);
+					}
+				}
+
+				AppendLog("所有用户处理完成");
+			}
+			catch (Exception ex)
+			{
+				AppendLog($"执行异常：{ex.Message}");
+			}
+			finally
+			{
+				isRunning = false;
+				btnRun.Enabled = true;
+				currentUserIndex = -1;
+			}
+		}
+
+		private async Task<bool> RunSingleUserAsync(UserConfig user)
+		{
+			try
+			{
+				AppendLog("初始化浏览器...");
+				if (!await EnsureWebViewReadyAsync()) return false;
+
+				AppendLog($"打开页面...");
+				bool navOk = await NavigateAsync(TargetUrl);
+				if (!navOk)
+				{
+					AppendLog("页面加载失败");
+					return false;
+				}
+
+				await Task.Delay(2000);
+
+				// 检查表单是否已填写
+				var alreadyFilled = await IsFormAlreadyFilledAsync();
+				if (alreadyFilled)
+				{
+					AppendLog("表单已有数据，跳过填充");
+				}
+				else
+				{
+					await FillFormAsync(user);
+					var nameOk = await WaitEmployeeNameOkAsync();
+					if (!nameOk)
+					{
+						AppendLog("员工姓名未加载成功，本次不提交");
+						return false;
+					}
+				}
+
+				// 查找提交按钮
+				var probe = await ProbeSubmitButtonAsync();
+				if (probe == null || !probe.Found)
+				{
+					AppendLog("未找到提交按钮");
+					return false;
+				}
+
+				AppendLog($"按钮状态：disabled={probe.Disabled} visible={probe.Visible}");
+
+				if (probe.Disabled)
+				{
+					AppendLog("按钮已禁用，可能已提交或未填写完整");
+					return false;
+				}
+
+				AppendLog("点击提交...");
+				var click = await ClickSubmitButtonAsync();
+				if (click?.Clicked == true)
+				{
+					AppendLog("提交成功");
+					await Task.Delay(2000);
+					return true;
+				}
+				else
+				{
+					AppendLog($"提交失败：{click?.Reason}");
+					return false;
+				}
+			}
+			catch (Exception ex)
+			{
+				AppendLog($"处理用户异常：{ex.Message}");
+				return false;
+			}
+		}
+
+		private void UpdateUserRowStatus(int index, UserConfig user)
+		{
+			if (index < 0 || index >= dgvUsers.Rows.Count) return;
+			
+			if (InvokeRequired)
+			{
+				BeginInvoke(new Action(() => UpdateUserRowStatus(index, user)));
+				return;
+			}
+
+			dgvUsers.Rows[index].Cells["colLastDate"].Value = user.LastSubmittedDate;
+			dgvUsers.Rows[index].Cells["colLastResult"].Value = user.LastResult;
+		}
+
+
+		#region 配置管理
+
+		private void LoadConfig()
+		{
+			try
+			{
+				if (File.Exists(configFilePath))
+				{
+					string json = File.ReadAllText(configFilePath, Encoding.UTF8);
+					config = JsonConvert.DeserializeObject<AppConfig>(json) ?? new AppConfig();
+				}
+				else
+				{
+					config = new AppConfig();
+				}
+			}
+			catch
+			{
+				config = new AppConfig();
+			}
+		}
+
+		private void SaveConfig()
+		{
+			try
+			{
+				string dir = Path.GetDirectoryName(configFilePath);
+				if (!string.IsNullOrWhiteSpace(dir)) Directory.CreateDirectory(dir);
+				string json = JsonConvert.SerializeObject(config, Formatting.Indented);
+				File.WriteAllText(configFilePath, json, Encoding.UTF8);
+			}
+			catch (Exception ex)
+			{
+				AppendLog($"保存配置失败：{ex.Message}");
+			}
+		}
+
+		private void LoadConfigToUI()
 		{
 			isLoadingSettings = true;
 			try
 			{
-				var cfg = LoadConfig();
-				autoStartEnabled = cfg?.AutoStartEnabled ?? false;
-				chkAutoStart.Checked = autoStartEnabled;
+				chkAutoStart.Checked = config.AutoStartEnabled;
+				LoadDaysToUI();
+				
+				dgvUsers.Rows.Clear();
+				foreach (var user in config.Users)
+				{
+					dgvUsers.Rows.Add(
+						user.Enabled,
+						user.Factory,
+						user.EmployeeId,
+						user.Phone,
+						user.CarNo,
+						user.LastSubmittedDate,
+						user.LastResult
+					);
+				}
 			}
 			finally
 			{
@@ -107,193 +462,203 @@ namespace WinFormsApp1.second_menu
 			}
 		}
 
-		private async Task<bool> HasEmployeeNameErrorAsync()
+		private void SaveUIToConfig()
 		{
-			try
+			config.AutoStartEnabled = chkAutoStart.Checked;
+			SaveDaysFromUI();
+			config.Users.Clear();
+			
+			foreach (DataGridViewRow row in dgvUsers.Rows)
 			{
-				string script = @"
-					(function () {
-						function normalize(text) {
-							if (!text) return '';
-							return text.replace(/\s+/g, '').trim();
-						}
-
-						var nodes = document.querySelectorAll('*');
-						for (var i = 0; i < nodes.length; i++) {
-							var t = normalize(nodes[i].innerText || nodes[i].textContent);
-							if (t === '员工号不正确' || t === '本字段必填') {
-								return true;
-							}
-						}
-						return false;
-					})();";
-
-				string result = await web.ExecuteScriptAsync(script);
-				if (string.IsNullOrWhiteSpace(result)) return false;
-				return JsonConvert.DeserializeObject<bool>(result);
-			}
-			catch
-			{
-				return false;
+				if (row.IsNewRow) continue;
+				
+				config.Users.Add(new UserConfig
+				{
+					Enabled = Convert.ToBoolean(row.Cells["colEnabled"].Value ?? false),
+					Factory = row.Cells["colFactory"].Value?.ToString() ?? "",
+					EmployeeId = row.Cells["colEmployeeId"].Value?.ToString() ?? "",
+					Phone = row.Cells["colPhone"].Value?.ToString() ?? "",
+					CarNo = row.Cells["colCarNo"].Value?.ToString() ?? "",
+					LastSubmittedDate = row.Cells["colLastDate"].Value?.ToString() ?? "",
+					LastResult = row.Cells["colLastResult"].Value?.ToString() ?? ""
+				});
 			}
 		}
 
-		private async Task<bool> WaitEmployeeNameOkAsync()
+		#endregion
+
+		#region 表单操作
+
+		private async Task FillFormAsync(UserConfig user)
 		{
-			// 最多等待约 8 秒，直到错误提示消失
-			for (int i = 0; i < 8; i++)
+			// 先选择厂区
+			if (!string.IsNullOrWhiteSpace(user.Factory))
 			{
-				bool hasError = await HasEmployeeNameErrorAsync();
-				if (!hasError)
-				{
+				await SelectFactoryAsync(user.Factory);
+				await Task.Delay(500);
+			}
+
+			// 填写员工号
+			if (!string.IsNullOrWhiteSpace(user.EmployeeId))
+			{
+				await SetInputValueAsync("txtEmployeeID", user.EmployeeId);
+				AppendLog("已填写员工号，等待姓名加载...");
+				await Task.Delay(3500);
+			}
+
+			// 填写手机号
+			if (!string.IsNullOrWhiteSpace(user.Phone))
+			{
+				await SetInputValueAsync("txtPhoneNo", user.Phone);
+				await Task.Delay(300);
+			}
+
+			// 填写车牌号
+			if (!string.IsNullOrWhiteSpace(user.CarNo))
+			{
+				await SetInputValueAsync("txtCarNo", user.CarNo);
+				await Task.Delay(300);
+			}
+		}
+
+		private async Task SetInputValueAsync(string widgetId, string value)
+		{
+			string escapedValue = JsEscape(value);
+			string script = $@"
+				(function() {{
+					var selector = '[data-widget-id=""{widgetId}""]';
+					var root = document.querySelector(selector);
+					if (!root) return false;
+					var input = root.querySelector('input');
+					if (!input) return false;
+
+					var nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+					nativeInputValueSetter.call(input, '{escapedValue}');
+
+					var inputEvent = new Event('input', {{ bubbles: true, cancelable: true }});
+					input.dispatchEvent(inputEvent);
+
+					var changeEvent = new Event('change', {{ bubbles: true, cancelable: true }});
+					input.dispatchEvent(changeEvent);
+
+					input.blur();
 					return true;
-				}
-				await Task.Delay(1000);
-			}
-			return false;
+				}})();";
+
+			await web.ExecuteScriptAsync(script);
 		}
 
-		private AutoSubmitConfig LoadConfig()
+		private async Task SelectFactoryAsync(string factoryName)
 		{
-			try
-			{
-				if (!File.Exists(stateFilePath)) return new AutoSubmitConfig();
-				string json = File.ReadAllText(stateFilePath, Encoding.UTF8);
-				if (string.IsNullOrWhiteSpace(json)) return new AutoSubmitConfig();
-				return JsonConvert.DeserializeObject<AutoSubmitConfig>(json) ?? new AutoSubmitConfig();
-			}
-			catch
-			{
-				return new AutoSubmitConfig();
-			}
-		}
+			AppendLog($"选择厂区: {factoryName}");
 
-		private void SaveConfig(AutoSubmitConfig cfg)
-		{
-			try
-			{
-				if (cfg == null) return;
-				string dir = Path.GetDirectoryName(stateFilePath);
-				if (!string.IsNullOrWhiteSpace(dir)) Directory.CreateDirectory(dir);
-				string json = JsonConvert.SerializeObject(cfg, Formatting.Indented);
-				File.WriteAllText(stateFilePath, json, Encoding.UTF8);
-			}
-			catch
-			{
-			}
-		}
-
-		private async Task RunAsync(bool manual)
-		{
-			if (!manual)
-			{
-				if (hasAutoStarted) return;
-				hasAutoStarted = true;
-			}
-
-			if (isRunning) return;
-			isRunning = true;
-			try
-			{
-				if (!IsWorkday(DateTime.Today))
-				{
-					AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 今日非工作日，跳过");
-					return;
-				}
-
-				var cfg = LoadConfig();
-				string today = DateTime.Today.ToString("yyyy-MM-dd");
-				if (!manual && cfg != null && !string.IsNullOrWhiteSpace(cfg.LastSubmittedDate) && string.Equals(cfg.LastSubmittedDate, today, StringComparison.OrdinalIgnoreCase))
-				{
-					AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 今日已执行过（本机记录），跳过");
-					return;
-				}
-
-				AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 初始化浏览器...");
-				if (!await EnsureWebViewReadyAsync()) return;
-
-				AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 打开页面: {TargetUrl}");
-				bool navOk = await NavigateAsync(TargetUrl);
-				if (!navOk)
-				{
-					AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 页面加载失败");
-					return;
-				}
-
-				await Task.Delay(2000);
-				var alreadyFilled = await IsFormAlreadyFilledAsync();
-				if (alreadyFilled)
-				{
-					AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 表单已有数据，跳过自动填充");
-				}
-				else
-				{
-					await FillFormAsync();
-					var nameOk = await WaitEmployeeNameOkAsync();
-					if (!nameOk)
-					{
-						AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 员工姓名未加载成功（仍有错误提示），本次不自动提交");
-						return;
+			// 点击打开弹窗
+			string openScript = @"
+				(function() {
+					var root = document.querySelector('[data-widget-id=""cmbFty""]');
+					if (!root) return 'no_widget';
+					
+					var selectBox = root.querySelector('.min-h-12.border');
+					if (selectBox) {
+						selectBox.click();
+						return 'clicked_selectbox';
 					}
-				}
-
-				var probe = await ProbeSubmitButtonAsync();
-				if (probe == null || !probe.Found)
-				{
-					AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 未找到“提交”按钮，无法自动提交");
-					return;
-				}
-
-				AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 找到按钮：text={probe.Text} disabled={probe.Disabled} visible={probe.Visible}");
-
-				if (probe.Disabled)
-				{
-					AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 按钮已禁用，表单当前不可提交（可能未填写完整或已提交），本次不写入本机记录");
-					return;
-				}
-
-				if (!probe.Visible)
-				{
-					AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 按钮不可见，跳过");
-					return;
-				}
-
-				AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 开始点击“提交”...");
-				var click = await ClickSubmitButtonAsync();
-				if (click == null)
-				{
-					AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 点击脚本执行失败");
-					return;
-				}
-
-				AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 点击结果：clicked={click.Clicked} reason={click.Reason}");
-				if (click.Clicked)
-				{
-					cfg.LastSubmittedDate = today;
-					cfg.LastResult = "clicked";
-					SaveConfig(cfg);
-					await Task.Delay(2000);
-					var after = await ProbeSubmitButtonAsync();
-					if (after != null)
-					{
-						AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 点击后按钮状态：disabled={after.Disabled} visible={after.Visible}");
+					
+					var arrowArea = root.querySelector('.anticon-down');
+					if (arrowArea) {
+						var clickTarget = arrowArea.closest('.min-h-12') || arrowArea.parentElement;
+						if (clickTarget) {
+							clickTarget.click();
+							return 'clicked_arrow_area';
+						}
 					}
+					
+					root.click();
+					return 'clicked_root';
+				})();";
+
+			string openResult = await web.ExecuteScriptAsync(openScript);
+			AppendLog($"打开弹窗: {openResult}");
+
+			// 等待弹窗
+			for (int i = 0; i < 25; i++)
+			{
+				await Task.Delay(200);
+				string checkScript = @"
+					(function() {
+						var popup = document.querySelector('.adm-popup-body');
+						if (popup && popup.offsetHeight > 0) {
+							var checkboxes = popup.querySelectorAll('label.adm-checkbox');
+							return 'visible:' + checkboxes.length;
+						}
+						return 'hidden';
+					})();";
+				string waitResult = await web.ExecuteScriptAsync(checkScript);
+				if (waitResult.Contains("visible"))
+				{
+					AppendLog($"弹窗已出现");
+					break;
 				}
 			}
-			catch (Exception ex)
-			{
-				AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 执行异常：{ex.Message}");
-			}
-			finally
-			{
-				isRunning = false;
-			}
+
+			await Task.Delay(500);
+
+			// 选择厂区
+			string escapedFactory = JsEscape(factoryName);
+			string selectScript = $@"
+				(function() {{
+					var target = '{escapedFactory}'.trim();
+					var popup = document.querySelector('.adm-popup-body');
+					if (!popup) return 'no_popup';
+					
+					var rows = popup.querySelectorAll('.flex.items-center.justify-between');
+					for (var i = 0; i < rows.length; i++) {{
+						var row = rows[i];
+						var nameDiv = row.querySelector('.flex-auto');
+						if (nameDiv) {{
+							var text = (nameDiv.innerText || nameDiv.textContent || '').trim();
+							if (text === target) {{
+								var checkbox = row.querySelector('input[type=""checkbox""]');
+								if (checkbox) {{
+									checkbox.click();
+									return 'clicked:' + text;
+								}}
+							}}
+						}}
+					}}
+					return 'not_found';
+				}})();";
+
+			string selectResult = await web.ExecuteScriptAsync(selectScript);
+			AppendLog($"厂区选择: {selectResult}");
+			await Task.Delay(500);
+
+			// 点击确定
+			string confirmScript = @"
+				(function() {
+					var popup = document.querySelector('.adm-popup-body');
+					if (!popup) return 'no_popup';
+					
+					var textLgDivs = popup.querySelectorAll('.text-lg');
+					for (var i = 0; i < textLgDivs.length; i++) {
+						var div = textLgDivs[i];
+						var txt = (div.innerText || div.textContent || '').trim();
+						if (txt === '确定' || txt === '确认') {
+							div.click();
+							return 'confirmed';
+						}
+					}
+					return 'no_confirm_btn';
+				})();";
+
+			string confirmResult = await web.ExecuteScriptAsync(confirmScript);
+			AppendLog($"确定按钮: {confirmResult}");
 		}
 
-		private static bool IsWorkday(DateTime date)
-		{
-			return date.DayOfWeek != DayOfWeek.Saturday && date.DayOfWeek != DayOfWeek.Sunday;
-		}
+		#endregion
+
+
+		#region WebView操作
 
 		private async Task<bool> EnsureWebViewReadyAsync()
 		{
@@ -301,12 +666,11 @@ namespace WinFormsApp1.second_menu
 			{
 				await web.EnsureCoreWebView2Async();
 				web.CoreWebView2.Settings.AreDevToolsEnabled = true;
-				web.CoreWebView2.Settings.AreDefaultContextMenusEnabled = true;
 				return true;
 			}
 			catch (Exception ex)
 			{
-				AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} WebView2 初始化失败：{ex.Message}");
+				AppendLog($"WebView2初始化失败：{ex.Message}");
 				return false;
 			}
 		}
@@ -354,17 +718,12 @@ namespace WinFormsApp1.second_menu
 							if (!root) return false;
 							var input = root.querySelector('input');
 							if (!input) return false;
-							if (!input.value) return false;
-							return input.value.trim().length > 0;
+							return input.value && input.value.trim().length > 0;
 						}
-
-						return hasValueByWidgetId('txtEmployeeID')
-							|| hasValueByWidgetId('txtPhoneNo')
-							|| hasValueByWidgetId('txtCarNo');
+						return hasValueByWidgetId('txtEmployeeID') || hasValueByWidgetId('txtPhoneNo') || hasValueByWidgetId('txtCarNo');
 					})();";
 
 				string result = await web.ExecuteScriptAsync(script);
-				if (string.IsNullOrWhiteSpace(result)) return false;
 				return JsonConvert.DeserializeObject<bool>(result);
 			}
 			catch
@@ -373,371 +732,77 @@ namespace WinFormsApp1.second_menu
 			}
 		}
 
-		private async Task FillFormAsync()
+		private async Task<bool> HasEmployeeNameErrorAsync()
 		{
-			var cfg = LoadConfig();
-			if (cfg == null) return;
-
-			var employeeId = JsEscape(cfg.EmployeeId);
-			var phone = JsEscape(cfg.Phone);
-			var carNo = JsEscape(cfg.CarNo);
-			var factory = JsEscape(cfg.Factory);
-
-			if (string.IsNullOrWhiteSpace(employeeId) &&
-			    string.IsNullOrWhiteSpace(phone) &&
-			    string.IsNullOrWhiteSpace(carNo) &&
-			    string.IsNullOrWhiteSpace(factory))
+			try
 			{
-				return;
-			}
-
-			// 先选择厂区（如果有）
-			if (!string.IsNullOrWhiteSpace(factory))
-			{
-				await SelectFactoryAsync(factory);
-				await Task.Delay(500);
-			}
-
-			// 填写员工号并等待姓名加载
-			if (!string.IsNullOrWhiteSpace(employeeId))
-			{
-				await SetInputValueAsync("txtEmployeeID", employeeId);
-				AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 已填写员工号，等待姓名加载...");
-				await Task.Delay(3500); // 等待员工姓名加载
-			}
-
-			// 填写手机号
-			if (!string.IsNullOrWhiteSpace(phone))
-			{
-				await SetInputValueAsync("txtPhoneNo", phone);
-				await Task.Delay(300);
-			}
-
-			// 填写车牌号
-			if (!string.IsNullOrWhiteSpace(carNo))
-			{
-				await SetInputValueAsync("txtCarNo", carNo);
-				await Task.Delay(300);
-			}
-		}
-
-		/// <summary>
-		/// 使用 React 兼容方式设置输入框值
-		/// </summary>
-		private async Task SetInputValueAsync(string widgetId, string value)
-		{
-			string script = $@"
-				(function() {{
-					var selector = '[data-widget-id=""{widgetId}""]';
-					var root = document.querySelector(selector);
-					if (!root) return false;
-					var input = root.querySelector('input');
-					if (!input) return false;
-
-					// React 兼容：使用原生 setter 设置值
-					var nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
-					nativeInputValueSetter.call(input, '{value}');
-
-					// 触发 React 能识别的事件
-					var inputEvent = new Event('input', {{ bubbles: true, cancelable: true }});
-					input.dispatchEvent(inputEvent);
-
-					var changeEvent = new Event('change', {{ bubbles: true, cancelable: true }});
-					input.dispatchEvent(changeEvent);
-
-					// 模拟失焦以触发验证
-					input.blur();
-					return true;
-				}})();";
-
-			await web.ExecuteScriptAsync(script);
-		}
-
-		/// <summary>
-		/// 选择厂区（Ant Design Mobile Checkbox 弹窗）
-		/// </summary>
-		private async Task SelectFactoryAsync(string factoryName)
-		{
-			AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 开始选择厂区: {factoryName}");
-
-			// 1. 点击厂区选择框打开弹窗 - 需要点击内部的选择框区域
-			string openScript = @"
-				(function() {
-					var root = document.querySelector('[data-widget-id=""cmbFty""]');
-					if (!root) return 'no_widget';
-					
-					// 查找内部可点击的选择框
-					var selectBox = root.querySelector('.min-h-12.border');
-					if (selectBox) {
-						selectBox.click();
-						return 'clicked_selectbox';
-					}
-					
-					// 备用：查找包含下拉箭头的区域
-					var arrowArea = root.querySelector('.anticon-down');
-					if (arrowArea) {
-						var clickTarget = arrowArea.closest('.min-h-12') || arrowArea.parentElement;
-						if (clickTarget) {
-							clickTarget.click();
-							return 'clicked_arrow_area';
+				string script = @"
+					(function () {
+						var nodes = document.querySelectorAll('*');
+						for (var i = 0; i < nodes.length; i++) {
+							var t = (nodes[i].innerText || nodes[i].textContent || '').replace(/\s+/g, '').trim();
+							if (t === '员工号不正确' || t === '本字段必填') return true;
 						}
-					}
-					
-					// 备用：点击整个widget
-					root.click();
-					return 'clicked_root';
-				})();";
-
-			string openResult = await web.ExecuteScriptAsync(openScript);
-			AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 打开弹窗: {openResult}");
-
-			// 2. 等待弹窗出现（最多等待 5 秒）
-			string waitResult = "timeout";
-			for (int i = 0; i < 25; i++)
-			{
-				await Task.Delay(200);
-				string checkScript = @"
-					(function() {
-						var popup = document.querySelector('.adm-popup-body');
-						if (popup && popup.offsetHeight > 0) {
-							// 检查弹窗内是否有 checkbox 选项
-							var checkboxes = popup.querySelectorAll('label.adm-checkbox');
-							return 'visible:' + checkboxes.length + '_options';
-						}
-						return 'hidden';
+						return false;
 					})();";
-				waitResult = await web.ExecuteScriptAsync(checkScript);
-				if (waitResult.Contains("visible"))
-				{
-					AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 弹窗已出现 (等待 {(i + 1) * 200}ms): {waitResult}");
-					break;
-				}
+
+				string result = await web.ExecuteScriptAsync(script);
+				return JsonConvert.DeserializeObject<bool>(result);
 			}
-			if (!waitResult.Contains("visible"))
+			catch
 			{
-				AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 弹窗等待超时，尝试直接查找选项");
+				return false;
 			}
-
-			await Task.Delay(500); // 额外等待动画完成
-
-			// 3. 选择厂区 - 根据实际HTML结构：
-			// <div class="flex items-center justify-between px-4 py-4 border-b border-borderColor gap-2">
-			//   <label class="adm-checkbox"><input type="checkbox">...</label>
-			//   <div class="flex-auto">总厂</div>
-			// </div>
-			string selectScript = $@"
-				(function() {{
-					var target = '{factoryName}'.trim();
-					var popup = document.querySelector('.adm-popup-body');
-					if (!popup) return 'no_popup';
-					
-					// 调试：输出弹窗内所有文本
-					var allText = popup.innerText;
-					console.log('弹窗内容:', allText);
-					
-					// 方法1：查找弹窗内所有行（包含 checkbox 的行）
-					var rows = popup.querySelectorAll('.flex.items-center.justify-between');
-					console.log('找到行数:', rows.length);
-					
-					for (var i = 0; i < rows.length; i++) {{
-						var row = rows[i];
-						// 查找行内的 flex-auto div（包含厂区名称）
-						var nameDiv = row.querySelector('.flex-auto');
-						if (nameDiv) {{
-							var text = (nameDiv.innerText || nameDiv.textContent || '').trim();
-							console.log('行' + i + '文本:', text);
-							if (text === target) {{
-								// 找到匹配的厂区，点击 checkbox
-								var checkbox = row.querySelector('input[type=""checkbox""]');
-								if (checkbox) {{
-									checkbox.click();
-									return 'clicked_checkbox:' + text;
-								}}
-								// 备用：点击 label
-								var label = row.querySelector('label.adm-checkbox');
-								if (label) {{
-									label.click();
-									return 'clicked_label:' + text;
-								}}
-								// 备用：点击整行
-								row.click();
-								return 'clicked_row:' + text;
-							}}
-						}}
-					}}
-					
-					// 方法2：直接查找所有 flex-auto div
-					var flexAutoDivs = popup.querySelectorAll('.flex-auto');
-					console.log('找到flex-auto数:', flexAutoDivs.length);
-					
-					for (var j = 0; j < flexAutoDivs.length; j++) {{
-						var div = flexAutoDivs[j];
-						var text = (div.innerText || div.textContent || '').trim();
-						if (text === target) {{
-							var parent = div.parentElement;
-							if (parent) {{
-								var checkbox = parent.querySelector('input[type=""checkbox""]');
-								if (checkbox) {{
-									checkbox.click();
-									return 'method2_clicked_checkbox:' + text;
-								}}
-							}}
-						}}
-					}}
-					
-					// 方法3：遍历所有 adm-checkbox
-					var checkboxLabels = popup.querySelectorAll('label.adm-checkbox');
-					console.log('找到checkbox数:', checkboxLabels.length);
-					
-					for (var k = 0; k < checkboxLabels.length; k++) {{
-						var label = checkboxLabels[k];
-						var parent = label.parentElement;
-						if (parent) {{
-							var nameDiv = parent.querySelector('.flex-auto');
-							if (nameDiv) {{
-								var text = (nameDiv.innerText || nameDiv.textContent || '').trim();
-								if (text === target) {{
-									var checkbox = label.querySelector('input[type=""checkbox""]');
-									if (checkbox) {{
-										checkbox.click();
-										return 'method3_clicked:' + text;
-									}}
-								}}
-							}}
-						}}
-					}}
-					
-					return 'not_found:target=' + target + ',rows=' + rows.length;
-				}})();";
-
-			string selectResult = await web.ExecuteScriptAsync(selectScript);
-			AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 厂区选择结果: {selectResult}");
-			await Task.Delay(500);
-
-			// 4. 点击确定按钮 - 根据实际HTML：<div class="text-lg">确定</div>
-			string confirmScript = @"
-				(function() {
-					var popup = document.querySelector('.adm-popup-body');
-					if (!popup) return 'no_popup_for_confirm';
-					
-					// 查找弹窗顶部的确定按钮
-					var textLgDivs = popup.querySelectorAll('.text-lg');
-					for (var i = 0; i < textLgDivs.length; i++) {
-						var div = textLgDivs[i];
-						var txt = (div.innerText || div.textContent || '').trim();
-						if (txt === '确定' || txt === '确认') {
-							div.click();
-							return 'confirmed:' + txt;
-						}
-					}
-					
-					return 'no_confirm_btn:found_' + textLgDivs.length + '_text-lg';
-				})();";
-
-			string confirmResult = await web.ExecuteScriptAsync(confirmScript);
-			AppendLog($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 确定按钮: {confirmResult}");
 		}
 
-		private static string GetProbeSubmitButtonScript()
+		private async Task<bool> WaitEmployeeNameOkAsync()
 		{
-			return @"
-				(function () {
-					function isVisible(el) {
-						if (!el) return false;
-						var rect = el.getBoundingClientRect();
-						if (rect.width <= 0 || rect.height <= 0) return false;
-						var style = window.getComputedStyle(el);
-						if (!style) return true;
-						return style.display !== 'none'
-							&& style.visibility !== 'hidden'
-							&& style.opacity !== '0';
-					}
-
-					function getCandidates() {
-						var list1 = Array.prototype.slice.call(document.querySelectorAll('button'));
-						var list2 = Array.prototype.slice.call(document.querySelectorAll('[role=button]'));
-						return list1.concat(list2);
-					}
-
-					var candidates = getCandidates();
-					var match = candidates.find(function (el) {
-						var t = (el.innerText || '').trim();
-						return t === '提交' || t === '提交 ' || t.indexOf('提交') >= 0;
-					});
-
-					if (!match) {
-						return { found: false };
-					}
-
-					var text = (match.innerText || '').trim();
-					var className = (match.className || '').toLowerCase();
-					var disabled = !!match.disabled
-						|| match.getAttribute('aria-disabled') === 'true'
-						|| className.indexOf('disabled') >= 0;
-
-					return {
-						found: true,
-						text: text,
-						disabled: disabled,
-						visible: isVisible(match)
-					};
-				})();";
-		}
-
-		private static string GetClickSubmitButtonScript()
-		{
-			return @"
-				(function () {
-					function getCandidates() {
-						var list1 = Array.prototype.slice.call(document.querySelectorAll('button'));
-						var list2 = Array.prototype.slice.call(document.querySelectorAll('[role=button]'));
-						return list1.concat(list2);
-					}
-
-					var candidates = getCandidates();
-					var match = candidates.find(function (el) {
-						var t = (el.innerText || '').trim();
-						return t === '提交' || t === '提交 ' || t.indexOf('提交') >= 0;
-					});
-
-					if (!match) {
-						return { clicked: false, reason: 'not_found' };
-					}
-
-					var className = (match.className || '').toLowerCase();
-					var disabled = !!match.disabled
-						|| match.getAttribute('aria-disabled') === 'true'
-						|| className.indexOf('disabled') >= 0;
-
-					if (disabled) {
-						return { clicked: false, reason: 'disabled' };
-					}
-
-					match.click();
-					return { clicked: true, reason: 'clicked' };
-				})();";
-		}
-
-		private static string JsEscape(string value)
-		{
-			if (string.IsNullOrEmpty(value)) return string.Empty;
-			return value
-				.Replace("\\", "\\\\")
-				.Replace("'", "\\'")
-				.Replace("\r", string.Empty)
-				.Replace("\n", string.Empty);
+			for (int i = 0; i < 8; i++)
+			{
+				bool hasError = await HasEmployeeNameErrorAsync();
+				if (!hasError) return true;
+				await Task.Delay(1000);
+			}
+			return false;
 		}
 
 		private async Task<SubmitButtonProbeResult> ProbeSubmitButtonAsync()
 		{
 			try
 			{
-				string script = GetProbeSubmitButtonScript();
-				string result = await web.ExecuteScriptAsync(script);
-				if (string.IsNullOrWhiteSpace(result)) return null;
+				string script = @"
+					(function () {
+						function isVisible(el) {
+							if (!el) return false;
+							var rect = el.getBoundingClientRect();
+							if (rect.width <= 0 || rect.height <= 0) return false;
+							var style = window.getComputedStyle(el);
+							return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0';
+						}
 
-				var obj = JsonConvert.DeserializeObject<SubmitButtonProbeResult>(result);
-				return obj;
+						var candidates = Array.prototype.slice.call(document.querySelectorAll('button'))
+							.concat(Array.prototype.slice.call(document.querySelectorAll('[role=button]')));
+						
+						var match = candidates.find(function (el) {
+							var t = (el.innerText || '').trim();
+							return t.indexOf('提交') >= 0;
+						});
+
+						if (!match) return { found: false };
+
+						var className = (match.className || '').toLowerCase();
+						var disabled = !!match.disabled || match.getAttribute('aria-disabled') === 'true' || className.indexOf('disabled') >= 0;
+
+						return {
+							found: true,
+							text: (match.innerText || '').trim(),
+							disabled: disabled,
+							visible: isVisible(match)
+						};
+					})();";
+
+				string result = await web.ExecuteScriptAsync(script);
+				return JsonConvert.DeserializeObject<SubmitButtonProbeResult>(result);
 			}
 			catch
 			{
@@ -749,15 +814,44 @@ namespace WinFormsApp1.second_menu
 		{
 			try
 			{
-				string script = GetClickSubmitButtonScript();
+				string script = @"
+					(function () {
+						var candidates = Array.prototype.slice.call(document.querySelectorAll('button'))
+							.concat(Array.prototype.slice.call(document.querySelectorAll('[role=button]')));
+						
+						var match = candidates.find(function (el) {
+							var t = (el.innerText || '').trim();
+							return t.indexOf('提交') >= 0;
+						});
+
+						if (!match) return { clicked: false, reason: 'not_found' };
+
+						var className = (match.className || '').toLowerCase();
+						var disabled = !!match.disabled || match.getAttribute('aria-disabled') === 'true' || className.indexOf('disabled') >= 0;
+
+						if (disabled) return { clicked: false, reason: 'disabled' };
+
+						match.click();
+						return { clicked: true, reason: 'clicked' };
+					})();";
+
 				string result = await web.ExecuteScriptAsync(script);
-				if (string.IsNullOrWhiteSpace(result)) return null;
 				return JsonConvert.DeserializeObject<SubmitButtonClickResult>(result);
 			}
 			catch
 			{
 				return null;
 			}
+		}
+
+		#endregion
+
+		#region 辅助方法
+
+		private static string JsEscape(string value)
+		{
+			if (string.IsNullOrEmpty(value)) return string.Empty;
+			return value.Replace("\\", "\\\\").Replace("'", "\\'").Replace("\r", "").Replace("\n", "");
 		}
 
 		private void AppendLog(string line)
@@ -769,38 +863,42 @@ namespace WinFormsApp1.second_menu
 					BeginInvoke(new Action<string>(AppendLog), line);
 					return;
 				}
-				txtLog.AppendText(line + Environment.NewLine);
+				txtLog.AppendText($"{DateTime.Now:HH:mm:ss} {line}{Environment.NewLine}");
 			}
-			catch
-			{
-			}
+			catch { }
 		}
 
-		private class AutoSubmitConfig
-		{
-			// 配置
-			public bool AutoStartEnabled { get; set; } = false;
-			public string Factory { get; set; } = string.Empty;
-			public string EmployeeId { get; set; } = string.Empty;
-			public string Phone { get; set; } = string.Empty;
-			public string CarNo { get; set; } = string.Empty;
+		#endregion
 
-			// 状态
-			public string LastSubmittedDate { get; set; }
-			public string LastResult { get; set; }
+		#region 数据模型
+
+		private class AppConfig
+		{
+			public bool AutoStartEnabled { get; set; } = false;
+			public List<UserConfig> Users { get; set; } = new List<UserConfig>();
+			// 执行日期配置：周日=0, 周一=1, ..., 周六=6
+			public List<int> EnabledDays { get; set; } = new List<int> { 0, 1, 2, 3, 4 }; // 默认周日-周四
+		}
+
+		private class UserConfig
+		{
+			public bool Enabled { get; set; } = true;
+			public string Factory { get; set; } = "";
+			public string EmployeeId { get; set; } = "";
+			public string Phone { get; set; } = "";
+			public string CarNo { get; set; } = "";
+			public string LastSubmittedDate { get; set; } = "";
+			public string LastResult { get; set; } = "";
 		}
 
 		private class SubmitButtonProbeResult
 		{
 			[JsonProperty("found")]
 			public bool Found { get; set; }
-
 			[JsonProperty("text")]
 			public string Text { get; set; }
-
 			[JsonProperty("disabled")]
 			public bool Disabled { get; set; }
-
 			[JsonProperty("visible")]
 			public bool Visible { get; set; }
 		}
@@ -809,9 +907,10 @@ namespace WinFormsApp1.second_menu
 		{
 			[JsonProperty("clicked")]
 			public bool Clicked { get; set; }
-
 			[JsonProperty("reason")]
 			public string Reason { get; set; }
 		}
+
+		#endregion
 	}
 }
