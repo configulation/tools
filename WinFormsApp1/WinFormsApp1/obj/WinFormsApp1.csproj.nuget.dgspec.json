@@ -87,6 +87,18 @@
               "target": "Package",
               "version": "[23.7.0, )"
             },
+            "SharpDX": {
+              "target": "Package",
+              "version": "[4.2.0, )"
+            },
+            "SharpDX.DXGI": {
+              "target": "Package",
+              "version": "[4.2.0, )"
+            },
+            "SharpDX.Direct3D11": {
+              "target": "Package",
+              "version": "[4.2.0, )"
+            },
             "SunnyUI": {
               "target": "Package",
               "version": "[3.7.5, )"

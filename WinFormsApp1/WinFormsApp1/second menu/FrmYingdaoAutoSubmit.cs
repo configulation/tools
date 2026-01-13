@@ -282,7 +282,7 @@ namespace WinFormsApp1.second_menu
 					}
 					else
 					{
-						user.LastResult = "失败";
+						user.LastResult = "失败或已提交";
 					}
 					
 					// 更新UI
@@ -874,7 +874,7 @@ namespace WinFormsApp1.second_menu
 
 		private class AppConfig
 		{
-			public bool AutoStartEnabled { get; set; } = false;
+			public bool AutoStartEnabled { get; set; } = true;  // 默认开启自动执行
 			public List<UserConfig> Users { get; set; } = new List<UserConfig>();
 			// 执行日期配置：周日=0, 周一=1, ..., 周六=6
 			public List<int> EnabledDays { get; set; } = new List<int> { 0, 1, 2, 3, 4 }; // 默认周日-周四

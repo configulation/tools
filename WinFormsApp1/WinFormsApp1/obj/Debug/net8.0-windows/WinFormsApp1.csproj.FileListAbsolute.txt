@@ -73,3 +73,7 @@ D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\WinFo
 D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\WinFormsApp1\obj\Debug\net8.0-windows\WinFormsApp1.pdb
 D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\WinFormsApp1\obj\Debug\net8.0-windows\WinFormsApp1.genruntimeconfig.cache
 D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\WinFormsApp1\obj\Debug\net8.0-windows\ref\WinFormsApp1.dll
+D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\WinFormsApp1\bin\Debug\net8.0-windows\Config\yingdao_config.json
+D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\WinFormsApp1\bin\Debug\net8.0-windows\SharpDX.dll
+D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\WinFormsApp1\bin\Debug\net8.0-windows\SharpDX.Direct3D11.dll
+D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\WinFormsApp1\bin\Debug\net8.0-windows\SharpDX.DXGI.dll
