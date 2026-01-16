@@ -22,7 +22,7 @@
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "net8.0-windows"
+          "net8.0-windows7.0"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
@@ -31,7 +31,7 @@
         },
         "frameworks": {
           "net8.0-windows7.0": {
-            "targetAlias": "net8.0-windows",
+            "targetAlias": "net8.0-windows7.0",
             "projectReferences": {}
           }
         },
@@ -49,7 +49,7 @@
       },
       "frameworks": {
         "net8.0-windows7.0": {
-          "targetAlias": "net8.0-windows",
+          "targetAlias": "net8.0-windows7.0",
           "dependencies": {
             "ExcelDataReader": {
               "target": "Package",
@@ -73,19 +73,35 @@
             },
             "OpenCvSharp4": {
               "target": "Package",
-              "version": "[4.10.0.20241108, )"
+              "version": "[4.11.0.20250507, )"
             },
             "OpenCvSharp4.Extensions": {
               "target": "Package",
-              "version": "[4.10.0.20241108, )"
+              "version": "[4.11.0.20250507, )"
             },
             "OpenCvSharp4.runtime.win": {
               "target": "Package",
-              "version": "[4.10.0.20241108, )"
+              "version": "[4.11.0.20250507, )"
             },
             "Oracle.ManagedDataAccess.Core": {
               "target": "Package",
               "version": "[23.7.0, )"
+            },
+            "Sdcb.PaddleInference": {
+              "target": "Package",
+              "version": "[3.0.1, )"
+            },
+            "Sdcb.PaddleInference.runtime.win64.mkl": {
+              "target": "Package",
+              "version": "[3.0.1, )"
+            },
+            "Sdcb.PaddleOCR": {
+              "target": "Package",
+              "version": "[3.0.1, )"
+            },
+            "Sdcb.PaddleOCR.Models.Local": {
+              "target": "Package",
+              "version": "[3.0.1, )"
             },
             "SharpDX": {
               "target": "Package",
@@ -108,6 +124,10 @@
               "version": "[8.0.1, )"
             },
             "System.Drawing.Common": {
+              "target": "Package",
+              "version": "[8.0.11, )"
+            },
+            "System.Management": {
               "target": "Package",
               "version": "[8.0.0, )"
             },

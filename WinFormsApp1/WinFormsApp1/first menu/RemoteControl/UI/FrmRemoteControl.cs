@@ -80,21 +80,8 @@ namespace WinFormsApp1.first_menu.RemoteControl
 
         private void AdjustRightPanelLayout()
         {
-            if (panelMain == null || panelBottom == null || panelTop == null || panelLeft == null)
-            {
-                return;
-            }
-
-            int availableHeight = this.ClientSize.Height - panelTop.Height;
-            if (availableHeight <= 0)
-            {
-                return;
-            }
-
-            int logHeight = Math.Max(80, availableHeight / 4);
-            logHeight = Math.Min(logHeight, 200);
-
-            panelBottom.Height = logHeight;
+            // panelBottom 现在填充整个右侧区域，不需要调整高度
+            // 日志框会自动填充整个区域
         }
 
         private void AdjustPanelLeftLayout()
@@ -342,7 +329,7 @@ namespace WinFormsApp1.first_menu.RemoteControl
                 normalBtnFullScreenVisible = btnFullScreen.Visible;
                 normalLblConnectionStatusVisible = lblConnectionStatus.Visible;
 
-                panelMain.Visible = false;
+                // panelMain 已经默认隐藏，不需要再设置
                 panelBottom.Visible = false;
                 pictureBoxScreen.Visible = false;
 
@@ -358,9 +345,9 @@ namespace WinFormsApp1.first_menu.RemoteControl
             }
             else
             {
-                panelMain.Visible = true;
+                // panelMain 保持隐藏状态
                 panelBottom.Visible = true;
-                pictureBoxScreen.Visible = true;
+                pictureBoxScreen.Visible = false;  // 保持隐藏
 
                 btnTestMode.Visible = normalBtnTestModeVisible;
                 btnFullScreen.Visible = normalBtnFullScreenVisible;
@@ -857,11 +844,46 @@ namespace WinFormsApp1.first_menu.RemoteControl
 
         private async void btnStartHost_Click(object sender, EventArgs e)
         {
+            // 防止重复点击
+            if (btnStartHost.Enabled == false)
+            {
+                return;
+            }
+
+            btnStartHost.Enabled = false;
+            
             try
             {
                 if (!isHost)
                 {
+                    // 确保网络管理器已初始化
+                    if (networkManager == null)
+                    {
+                        AddLog($"[{DateTime.Now:HH:mm:ss}] 初始化网络管理器...\r\n");
+                        networkManager = new NetworkManager();
+                        networkManager.OnConnectionStatusChanged += OnConnectionStatusChanged;
+                        networkManager.OnScreenDataReceived += OnScreenDataReceived;
+                        networkManager.OnScreenInfoReceived += OnScreenInfoReceived;
+                        networkManager.OnLatencyUpdated += OnLatencyUpdated;
+                    }
+
+                    // 确保屏幕捕获已初始化
+                    if (screenCapture == null)
+                    {
+                        AddLog($"[{DateTime.Now:HH:mm:ss}] 初始化屏幕捕获...\r\n");
+                        screenCapture = new ScreenCaptureManager();
+                        screenCapture.Quality = ConfigManager.Instance.ScreenQuality;
+                    }
+
+                    // 设置设备码
+                    if (string.IsNullOrEmpty(localDeviceCode) || localDeviceCode == "000000")
+                    {
+                        GenerateDeviceCode();
+                    }
+
                     isHost = true;
+                    AddLog($"[{DateTime.Now:HH:mm:ss}] 正在启动受控模式...\r\n");
+                    
                     await networkManager.StartHostAsync(localDeviceCode);
 
                     string localIP = NetworkHelper.GetLocalIPAddress();
@@ -875,13 +897,23 @@ namespace WinFormsApp1.first_menu.RemoteControl
                 }
                 else
                 {
+                    AddLog($"[{DateTime.Now:HH:mm:ss}] 正在停止受控模式...\r\n");
                     await networkManager.StopAsync();
                     isHost = false;
+                    AddLog($"[{DateTime.Now:HH:mm:ss}] 已停止受控模式\r\n");
                 }
             }
             catch (Exception ex)
             {
-                UIMessageBox.ShowError($"启动失败: {ex.Message}");
+                AddLog($"[{DateTime.Now:HH:mm:ss}] 错误: {ex.Message}\r\n");
+                UIMessageBox.ShowError($"操作失败: {ex.Message}");
+                isHost = false;
+            }
+            finally
+            {
+                // 延迟恢复按钮状态，防止快速重复点击
+                await Task.Delay(500);
+                btnStartHost.Enabled = true;
             }
         }
 

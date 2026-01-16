@@ -77,3 +77,5 @@ D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\WinFo
 D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\WinFormsApp1\bin\Debug\net8.0-windows\SharpDX.dll
 D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\WinFormsApp1\bin\Debug\net8.0-windows\SharpDX.Direct3D11.dll
 D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\WinFormsApp1\bin\Debug\net8.0-windows\SharpDX.DXGI.dll
+D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\WinFormsApp1\obj\Debug\net8.0-windows\WinFormsApp1.second_menu.ChessRecognizer.Forms.FrmChessRecognizer.resources
+D:\ProgramCode\BaiduSyncdisk\QUANYUANCHEN\cheese\.net\winfrom\WinFormsApp1\WinFormsApp1\obj\Debug\net8.0-windows\WinFormsApp1.second_menu.ChessRecognizer.Forms.FrmSettings.resources

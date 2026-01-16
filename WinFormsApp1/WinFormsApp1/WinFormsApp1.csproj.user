@@ -40,6 +40,12 @@
     <Compile Update="FormWrapperPage.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="second menu\ChessRecognizer\Forms\FrmChessRecognizer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="second menu\ChessRecognizer\Forms\FrmSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="second menu\FrmBelongTo1jicaidan.cs">
       <SubType>Form</SubType>
     </Compile>

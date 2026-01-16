@@ -238,11 +238,11 @@ namespace WinFormsApp1.second_menu
 				return;
 			}
 
-			if (!IsInTimeWindow())
-			{
-				AppendLog("当前时间超过13:30，已过抽签截止时间");
-				return;
-			}
+			//if (!IsInTimeWindow())
+			//{
+			//	AppendLog("当前时间超过13:30，已过抽签截止时间");
+			//	return;
+			//}
 
 			isRunning = true;
 			btnRun.Enabled = false;

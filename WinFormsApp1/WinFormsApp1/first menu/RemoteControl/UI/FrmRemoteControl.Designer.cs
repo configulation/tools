@@ -373,7 +373,6 @@ namespace WinFormsApp1.first_menu.RemoteControl
             // 
             // panelMain
             // 
-            this.panelMain.Controls.Add(this.pictureBoxScreen);
             this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelMain.Font = new System.Drawing.Font("微软雅黑", 12F);
             this.panelMain.Location = new System.Drawing.Point(270, 60);
@@ -385,6 +384,7 @@ namespace WinFormsApp1.first_menu.RemoteControl
             this.panelMain.TabIndex = 2;
             this.panelMain.Text = null;
             this.panelMain.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
+            this.panelMain.Visible = false;  // 隐藏主面板，使用独立窗口显示
             // 
             // pictureBoxScreen
             // 
@@ -405,13 +405,13 @@ namespace WinFormsApp1.first_menu.RemoteControl
             // panelBottom
             // 
             this.panelBottom.Controls.Add(this.groupBoxLog);
-            this.panelBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panelBottom.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelBottom.Font = new System.Drawing.Font("微软雅黑", 12F);
-            this.panelBottom.Location = new System.Drawing.Point(270, 450);
+            this.panelBottom.Location = new System.Drawing.Point(270, 60);
             this.panelBottom.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.panelBottom.MinimumSize = new System.Drawing.Size(1, 1);
             this.panelBottom.Name = "panelBottom";
-            this.panelBottom.Size = new System.Drawing.Size(530, 150);
+            this.panelBottom.Size = new System.Drawing.Size(530, 390);
             this.panelBottom.TabIndex = 3;
             this.panelBottom.Text = null;
             this.panelBottom.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
@@ -453,12 +453,12 @@ namespace WinFormsApp1.first_menu.RemoteControl
             // 
             this.AllowShowTitle = false;
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(800, 600);
-            this.Controls.Add(this.panelMain);
+            this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.panelBottom);
+            this.Controls.Add(this.panelMain);
             this.Controls.Add(this.panelLeft);
             this.Controls.Add(this.panelTop);
-            this.MinimumSize = new System.Drawing.Size(800, 550);
+            this.MinimumSize = new System.Drawing.Size(800, 400);
             this.Name = "FrmRemoteControl";
             this.Padding = new System.Windows.Forms.Padding(0);
             this.ShowTitle = false;
