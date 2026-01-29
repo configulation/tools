@@ -12,7 +12,7 @@ namespace WinFormsApp1.first_menu.RemoteControl
         private Sunny.UI.UILabel lblDeviceCode;
         private Sunny.UI.UIButton btnCopyCode;
         private Sunny.UI.UIButton btnRefreshCode;
-        private Sunny.UI.UITextBox uiTextBoxRemoteCode;
+        private Sunny.UI.UIComboBox uiComboBoxRemoteCode;
         private Sunny.UI.UIButton btnConnect;
         private Sunny.UI.UIButton btnStartHost;
         private System.Windows.Forms.PictureBox pictureBoxScreen;
@@ -62,7 +62,7 @@ namespace WinFormsApp1.first_menu.RemoteControl
             this.btnCopyCode = new Sunny.UI.UIButton();
             this.btnRefreshCode = new Sunny.UI.UIButton();
             this.btnStartHost = new Sunny.UI.UIButton();
-            this.uiTextBoxRemoteCode = new Sunny.UI.UITextBox();
+            this.uiComboBoxRemoteCode = new Sunny.UI.UIComboBox();
             this.btnConnect = new Sunny.UI.UIButton();
             this.panelMain = new Sunny.UI.UIPanel();
             this.pictureBoxScreen = new System.Windows.Forms.PictureBox();
@@ -269,7 +269,7 @@ namespace WinFormsApp1.first_menu.RemoteControl
             this.groupBoxControl.Controls.Add(this.btnCopyCode);
             this.groupBoxControl.Controls.Add(this.btnRefreshCode);
             this.groupBoxControl.Controls.Add(this.btnStartHost);
-            this.groupBoxControl.Controls.Add(this.uiTextBoxRemoteCode);
+            this.groupBoxControl.Controls.Add(this.uiComboBoxRemoteCode);
             this.groupBoxControl.Controls.Add(this.btnConnect);
             this.groupBoxControl.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBoxControl.Font = new System.Drawing.Font("微软雅黑", 12F);
@@ -342,21 +342,25 @@ namespace WinFormsApp1.first_menu.RemoteControl
             this.btnStartHost.TipsFont = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.btnStartHost.Click += new System.EventHandler(this.btnStartHost_Click);
             // 
-            // uiTextBoxRemoteCode
+            // uiComboBoxRemoteCode
             // 
-            this.uiTextBoxRemoteCode.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.uiTextBoxRemoteCode.Font = new System.Drawing.Font("微软雅黑", 12F);
-            this.uiTextBoxRemoteCode.Location = new System.Drawing.Point(15, 155);
-            this.uiTextBoxRemoteCode.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.uiTextBoxRemoteCode.MinimumSize = new System.Drawing.Size(1, 16);
-            this.uiTextBoxRemoteCode.Name = "uiTextBoxRemoteCode";
-            this.uiTextBoxRemoteCode.Padding = new System.Windows.Forms.Padding(5);
-            this.uiTextBoxRemoteCode.ShowText = false;
-            this.uiTextBoxRemoteCode.Size = new System.Drawing.Size(230, 35);
-            this.uiTextBoxRemoteCode.TabIndex = 5;
-            this.uiTextBoxRemoteCode.Text = "666666#192.168.1.6";
-            this.uiTextBoxRemoteCode.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
-            this.uiTextBoxRemoteCode.Watermark = "输入远程设备码";
+            this.uiComboBoxRemoteCode.DataSource = null;
+            this.uiComboBoxRemoteCode.DropDownStyle = Sunny.UI.UIDropDownStyle.DropDown;
+            this.uiComboBoxRemoteCode.FillColor = System.Drawing.Color.White;
+            this.uiComboBoxRemoteCode.Font = new System.Drawing.Font("微软雅黑", 12F);
+            this.uiComboBoxRemoteCode.ItemHoverColor = System.Drawing.Color.FromArgb(((int)(((byte)(155)))), ((int)(((byte)(200)))), ((int)(((byte)(255)))));
+            this.uiComboBoxRemoteCode.Location = new System.Drawing.Point(15, 155);
+            this.uiComboBoxRemoteCode.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.uiComboBoxRemoteCode.MinimumSize = new System.Drawing.Size(63, 0);
+            this.uiComboBoxRemoteCode.Name = "uiComboBoxRemoteCode";
+            this.uiComboBoxRemoteCode.Padding = new System.Windows.Forms.Padding(0, 0, 30, 2);
+            this.uiComboBoxRemoteCode.Size = new System.Drawing.Size(230, 35);
+            this.uiComboBoxRemoteCode.SymbolSize = 24;
+            this.uiComboBoxRemoteCode.TabIndex = 5;
+            this.uiComboBoxRemoteCode.Text = "666666#192.168.1.6";
+            this.uiComboBoxRemoteCode.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
+            this.uiComboBoxRemoteCode.Watermark = "输入远程设备码";
+            this.uiComboBoxRemoteCode.MouseDown += new System.Windows.Forms.MouseEventHandler(this.uiComboBoxRemoteCode_MouseDown);
             // 
             // btnConnect
             // 

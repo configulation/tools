@@ -372,5 +372,31 @@ namespace WinFormsApp1.first_menu.RemoteControl
                 // ignore
             }
         }
+
+        public void HideTopPanel()
+        {
+            if (IsDisposed) return;
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new Action(HideTopPanel));
+                return;
+            }
+
+            panelTop.Visible = false;
+        }
+
+        public void ShowTopPanel()
+        {
+            if (IsDisposed) return;
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new Action(ShowTopPanel));
+                return;
+            }
+
+            panelTop.Visible = true;
+        }
     }
 }

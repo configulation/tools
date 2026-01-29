@@ -16,6 +16,8 @@ namespace WinFormsApp1.first_menu.RemoteControl
         private NetworkProtocol networkProtocol;           // 专业级网络协议
         private AdaptiveFrameController frameController;   // 自适应帧率控制
         private RemoteControlManager remoteControl;
+        private ClipboardManager clipboardManager;         // 剪贴板管理器
+        private ConnectionHistoryManager historyManager;   // 连接历史管理器
         private bool isHost = false;
         private bool isConnected = false;
         private string localDeviceCode = "";
@@ -150,6 +152,15 @@ namespace WinFormsApp1.first_menu.RemoteControl
             networkManager.OnScreenDataReceived += OnScreenDataReceived;
             networkManager.OnScreenInfoReceived += OnScreenInfoReceived;
             networkManager.OnLatencyUpdated += OnLatencyUpdated;
+            networkManager.OnClipboardDataReceived += OnClipboardDataReceived;
+            
+            // 初始化剪贴板管理器
+            clipboardManager = new ClipboardManager();
+            clipboardManager.ClipboardChanged += OnLocalClipboardChanged;
+            
+            // 初始化历史记录管理器
+            historyManager = ConnectionHistoryManager.Instance;
+            LoadConnectionHistory();
             
             // 初始化专业级屏幕捕获
             screenCapture = new ScreenCaptureManager();
@@ -181,6 +192,50 @@ namespace WinFormsApp1.first_menu.RemoteControl
             // 设置UI初始值
             uiTrackBarQuality.Value = config.ScreenQuality;
             uiTrackBarFPS.Value = config.ScreenFPS;
+        }
+        
+        private void LoadConnectionHistory()
+        {
+            try
+            {
+                var history = historyManager.GetSortedHistory();
+                uiComboBoxRemoteCode.Items.Clear();
+                
+                foreach (var item in history)
+                {
+                    uiComboBoxRemoteCode.Items.Add(item.DeviceCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"加载历史记录失败: {ex.Message}");
+            }
+        }
+
+        private void uiComboBoxRemoteCode_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                int index = uiComboBoxRemoteCode.SelectedIndex;
+                if (index >= 0 && index < uiComboBoxRemoteCode.Items.Count)
+                {
+                    string deviceCode = uiComboBoxRemoteCode.Items[index].ToString();
+
+                    bool result = UIMessageBox.Show(
+                        $"确定要删除历史记录 '{deviceCode}' 吗?",
+                        "删除确认",
+                        UIStyle.Blue,
+                        UIMessageBoxButtons.OKCancel
+                    );
+
+                    if (result)  // 用户点击了"确定"
+                    {
+                        historyManager.RemoveConnection(deviceCode);
+                        LoadConnectionHistory();
+                        AddLog($"[{DateTime.Now:HH:mm:ss}] 已删除历史记录: {deviceCode}\r\n");
+                    }
+                }
+            }
         }
 
         private void GenerateDeviceCode()
@@ -235,6 +290,7 @@ namespace WinFormsApp1.first_menu.RemoteControl
                 {
                     latencyMs = -1;
                     remoteViewerForm?.SetLatency(-1);
+                    clipboardManager?.StopMonitoring();
                 }
 
                 UpdateRemoteViewerInfo();
@@ -257,6 +313,9 @@ namespace WinFormsApp1.first_menu.RemoteControl
                     {
                         updateTimer.Start();
                     }
+                    
+                    clipboardManager?.StartMonitoring();
+                    AddLog($"[{DateTime.Now:HH:mm:ss}] 剪贴板同步已启动\r\n");
                 }
 
                 ApplyCompactLayout(ShouldCompactLayout());
@@ -270,6 +329,57 @@ namespace WinFormsApp1.first_menu.RemoteControl
             latencyMs = ms;
             remoteViewerForm?.SetLatency(ms);
             UpdateRemoteViewerInfo();
+        }
+
+        private void OnLocalClipboardChanged(object sender, ClipboardChangedEventArgs e)
+        {
+            if (!isConnected)
+                return;
+
+            try
+            {
+                Task.Run(async () =>
+                {
+                    await networkManager.SendClipboardDataAsync(e.Data);
+                    SafeBeginInvoke(() =>
+                    {
+                        string typeDesc = e.Data.Type == ClipboardDataType.Text ? "文本" :
+                                         e.Data.Type == ClipboardDataType.Image ? "图片" : "文件";
+                        AddLog($"[{DateTime.Now:HH:mm:ss}] 发送剪贴板数据: {typeDesc} ({e.Data.GetSizeDescription()})\r\n");
+                    });
+                });
+            }
+            catch (Exception ex)
+            {
+                AddLog($"[{DateTime.Now:HH:mm:ss}] 发送剪贴板数据失败: {ex.Message}\r\n");
+            }
+        }
+
+        private void OnClipboardDataReceived(ClipboardData data)
+        {
+            SafeBeginInvoke(() =>
+            {
+                try
+                {
+                    string typeDesc = data.Type == ClipboardDataType.Text ? "文本" :
+                                     data.Type == ClipboardDataType.Image ? "图片" : "文件";
+                    AddLog($"[{DateTime.Now:HH:mm:ss}] 接收剪贴板数据: {typeDesc} ({data.GetSizeDescription()})\r\n");
+                    
+                    bool success = clipboardManager.SetClipboardData(data);
+                    if (success)
+                    {
+                        AddLog($"[{DateTime.Now:HH:mm:ss}] 剪贴板数据已应用\r\n");
+                    }
+                    else
+                    {
+                        AddLog($"[{DateTime.Now:HH:mm:ss}] 剪贴板数据应用失败\r\n");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AddLog($"[{DateTime.Now:HH:mm:ss}] 处理剪贴板数据失败: {ex.Message}\r\n");
+                }
+            });
         }
 
         private void UpdateRemoteViewerInfo()
@@ -598,7 +708,7 @@ namespace WinFormsApp1.first_menu.RemoteControl
         {
             btnStartHost.Enabled = !isConnected || (isConnected && isHost);
             btnConnect.Enabled = !isConnected || (isConnected && !isHost);
-            uiTextBoxRemoteCode.Enabled = !isConnected;
+            uiComboBoxRemoteCode.Enabled = !isConnected;
             
             // 只有受控端才能调整质量和帧率
             uiTrackBarQuality.Enabled = isHost;
@@ -609,7 +719,6 @@ namespace WinFormsApp1.first_menu.RemoteControl
         private Form fullScreenForm = null;
         private PictureBox fullScreenPictureBox = null;
         private Screen currentFullScreen = null;
-        private bool isAdjustingFullScreen = false;  // 防止递归调用
         
         // 全屏切换功能（真正的屏幕全屏）
         private void ToggleFullScreen()
@@ -625,10 +734,8 @@ namespace WinFormsApp1.first_menu.RemoteControl
                     StartPosition = FormStartPosition.Manual,
                     FormBorderStyle = FormBorderStyle.None,
                     ShowInTaskbar = false,
-                    TopMost = true,
                     KeyPreview = true,
                     BackColor = Color.Black,
-                    Bounds = currentFullScreen.Bounds,
                     Owner = this
                 };
                 
@@ -659,13 +766,22 @@ namespace WinFormsApp1.first_menu.RemoteControl
 
                 // 双击退出全屏
                 fullScreenPictureBox.DoubleClick += FullScreenPictureBox_DoubleClick;
-                fullScreenForm.Activated += FullScreenForm_Activated;
-                fullScreenForm.Deactivate += FullScreenForm_Deactivate;
-                // 不再订阅 SizeChanged 和 LocationChanged 事件，避免循环
                 
                 fullScreenForm.Controls.Add(fullScreenPictureBox);
+                
+                // 先隐藏任务栏和工具栏
+                HideTaskbar();
+                if (remoteViewerForm != null && !remoteViewerForm.IsDisposed)
+                {
+                    remoteViewerForm.HideTopPanel();
+                }
+                
+                // 设置窗口位置和大小为整个屏幕
+                fullScreenForm.Bounds = currentFullScreen.Bounds;
+                fullScreenForm.WindowState = FormWindowState.Maximized;
                 fullScreenForm.Show();
-                EnsureFullScreenCover();
+                fullScreenForm.BringToFront();
+                fullScreenPictureBox.Focus();
 
                 isFullScreen = true;
                 
@@ -691,70 +807,7 @@ namespace WinFormsApp1.first_menu.RemoteControl
             ToggleFullScreen();
         }
 
-        private void FullScreenForm_Activated(object sender, EventArgs e)
-        {
-            if (!isAdjustingFullScreen)
-                EnsureFullScreenCover();
-        }
 
-        private void FullScreenForm_Deactivate(object sender, EventArgs e)
-        {
-            if (!isAdjustingFullScreen)
-                EnsureFullScreenCover();
-        }
-
-        private void FullScreenForm_SizeChanged(object sender, EventArgs e)
-        {
-            // 不在这里调用EnsureFullScreenCover，避免循环
-        }
-
-        private void FullScreenForm_LocationChanged(object sender, EventArgs e)
-        {
-            // 不在这里调用EnsureFullScreenCover，避免循环
-        }
-
-        private void EnsureFullScreenCover()
-        {
-            if (fullScreenForm == null || fullScreenPictureBox == null || isAdjustingFullScreen)
-                return;
-
-            try
-            {
-                isAdjustingFullScreen = true;  // 设置标志，防止递归
-                
-                var screen = currentFullScreen ?? Screen.FromControl(this);
-                var bounds = screen.Bounds;
-                
-                // 只有当位置或大小确实需要调整时才进行操作
-                if (fullScreenForm.Location != bounds.Location || fullScreenForm.Size != bounds.Size)
-                {
-                    fullScreenForm.SuspendLayout();
-                    fullScreenForm.FormBorderStyle = FormBorderStyle.None;
-                    fullScreenForm.WindowState = FormWindowState.Normal;
-                    fullScreenForm.Location = bounds.Location;
-                    fullScreenForm.Size = bounds.Size;
-                    fullScreenForm.TopMost = true;
-                    
-                    WinAPI.SetWindowPos(
-                        fullScreenForm.Handle,
-                        WinAPI.HWND_TOPMOST,
-                        bounds.X,
-                        bounds.Y,
-                        bounds.Width,
-                        bounds.Height,
-                        WinAPI.SWP_SHOWWINDOW | WinAPI.SWP_NOOWNERZORDER | WinAPI.SWP_NOACTIVATE
-                    );
-                    fullScreenForm.ResumeLayout(true);
-                }
-                
-                fullScreenPictureBox.Dock = DockStyle.Fill;
-                fullScreenPictureBox.Focus();
-            }
-            finally
-            {
-                isAdjustingFullScreen = false;  // 重置标志
-            }
-        }
 
         
         private void ExitFullScreen()
@@ -781,9 +834,6 @@ namespace WinFormsApp1.first_menu.RemoteControl
                 }
                 
                 fullScreenForm.KeyDown -= FullScreenForm_KeyDown;
-                fullScreenForm.Activated -= FullScreenForm_Activated;
-                fullScreenForm.Deactivate -= FullScreenForm_Deactivate;
-                // 不再取消订阅已经没有订阅的事件
                 fullScreenForm.Close();
                 fullScreenForm.Dispose();
             }
@@ -793,6 +843,35 @@ namespace WinFormsApp1.first_menu.RemoteControl
             currentFullScreen = null;
             fullScreenSourcePictureBox = null;
             isFullScreen = false;
+            
+            // 显示远程查看器的工具栏
+            if (remoteViewerForm != null && !remoteViewerForm.IsDisposed)
+            {
+                remoteViewerForm.ShowTopPanel();
+            }
+            
+            // 显示Windows任务栏
+            ShowTaskbar();
+        }
+        
+        // 隐藏Windows任务栏
+        private void HideTaskbar()
+        {
+            IntPtr taskbarHandle = WinAPI.FindWindow("Shell_TrayWnd", null);
+            if (taskbarHandle != IntPtr.Zero)
+            {
+                WinAPI.ShowWindow(taskbarHandle, WinAPI.SW_HIDE);
+            }
+        }
+        
+        // 显示Windows任务栏
+        private void ShowTaskbar()
+        {
+            IntPtr taskbarHandle = WinAPI.FindWindow("Shell_TrayWnd", null);
+            if (taskbarHandle != IntPtr.Zero)
+            {
+                WinAPI.ShowWindow(taskbarHandle, WinAPI.SW_SHOW);
+            }
         }
         
         // 显示全屏提示
@@ -923,7 +1002,7 @@ namespace WinFormsApp1.first_menu.RemoteControl
             {
                 if (!isConnected)
                 {
-                    string remoteCode = uiTextBoxRemoteCode.Text.Trim();
+                    string remoteCode = uiComboBoxRemoteCode.Text.Trim();
                     if (string.IsNullOrEmpty(remoteCode))
                     {
                         UIMessageBox.ShowWarning("请输入设备码");
@@ -960,6 +1039,10 @@ namespace WinFormsApp1.first_menu.RemoteControl
                         AddLog($"[{DateTime.Now:HH:mm:ss}] 💡 例如: {remoteCode}#192.168.1.6\r\n");
                     }
                     
+                    // 保存到历史记录
+                    historyManager.AddOrUpdateConnection(remoteCode);
+                    LoadConnectionHistory();
+                    
                     isHost = false;
                     await networkManager.ConnectToHostAsync(remoteCode);
                     AddLog($"[{DateTime.Now:HH:mm:ss}] 正在连接到设备: {remoteCode}\r\n");
@@ -974,7 +1057,7 @@ namespace WinFormsApp1.first_menu.RemoteControl
                 UIMessageBox.ShowError($"连接失败: {ex.Message}");
                 
                 // 显示诊断选项
-                var (code, targetIP) = NetworkHelper.ParseDeviceCode(uiTextBoxRemoteCode.Text.Trim());
+                var (code, targetIP) = NetworkHelper.ParseDeviceCode(uiComboBoxRemoteCode.Text.Trim());
                 if (!string.IsNullOrEmpty(targetIP))
                 {
                     var result = UIMessageBox.Show(

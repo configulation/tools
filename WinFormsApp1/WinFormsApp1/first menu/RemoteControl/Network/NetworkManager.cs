@@ -40,6 +40,7 @@ namespace WinFormsApp1.first_menu.RemoteControl
         public event Action<Keys, bool> OnKeyEventReceived;
         public event Action<Size> OnScreenInfoReceived;  // 接收到屏幕信息
         public event Action<int> OnLatencyUpdated;
+        public event Action<ClipboardData> OnClipboardDataReceived;  // 接收到剪贴板数据
 
         private System.Threading.Timer heartbeatTimer;
         private bool isServerMode;
@@ -55,7 +56,8 @@ namespace WinFormsApp1.first_menu.RemoteControl
             ScreenInfo = 6,
             Heartbeat = 7,
             ConnectionInfo = 8,
-            ScreenDataCompressed = 9  // 压缩的屏幕数据（公网优化）
+            ScreenDataCompressed = 9,  // 压缩的屏幕数据（公网优化）
+            ClipboardData = 10  // 剪贴板数据
         }
         
         // 压缩阈值：超过此大小才压缩（小数据压缩反而更大）
@@ -559,6 +561,20 @@ namespace WinFormsApp1.first_menu.RemoteControl
                         }
                     }
                     break;
+                    
+                case MessageType.ClipboardData:
+                    {
+                        try
+                        {
+                            var clipboardData = ClipboardData.Deserialize(data);
+                            OnClipboardDataReceived?.Invoke(clipboardData);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"剪贴板数据解析错误: {ex.Message}");
+                        }
+                    }
+                    break;
             }
         }
 
@@ -717,6 +733,25 @@ namespace WinFormsApp1.first_menu.RemoteControl
             var data = new { Key = key.ToString(), IsDown = isDown };
             string json = JsonConvert.SerializeObject(data);
             SendMessage(MessageType.KeyPress, Encoding.UTF8.GetBytes(json));
+        }
+
+        /// <summary>
+        /// 发送剪贴板数据
+        /// </summary>
+        public async Task SendClipboardDataAsync(ClipboardData clipboardData)
+        {
+            if (clipboardData == null || networkStream == null || !networkStream.CanWrite)
+                return;
+
+            try
+            {
+                byte[] data = clipboardData.Serialize();
+                await SendMessageAsync(MessageType.ClipboardData, data);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"发送剪贴板数据失败: {ex.Message}");
+            }
         }
 
         /// <summary>

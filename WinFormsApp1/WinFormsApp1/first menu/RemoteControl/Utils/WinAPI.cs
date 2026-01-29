@@ -94,6 +94,7 @@ namespace WinFormsApp1.first_menu.RemoteControl
         public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 
         public static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
+        public static readonly IntPtr HWND_NOTOPMOST = new IntPtr(-2);
         public const uint SWP_SHOWWINDOW = 0x0040;
         public const uint SWP_NOOWNERZORDER = 0x0200;
         public const uint SWP_NOACTIVATE = 0x0010;
@@ -147,6 +148,9 @@ namespace WinFormsApp1.first_menu.RemoteControl
 
         [DllImport("user32.dll")]
         public static extern bool IsWindowVisible(IntPtr hWnd);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
 
         [DllImport("user32.dll")]
         public static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
