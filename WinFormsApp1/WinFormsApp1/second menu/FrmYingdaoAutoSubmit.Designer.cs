@@ -263,7 +263,7 @@ namespace WinFormsApp1.second_menu
             splitMain.Panel2.Controls.Add(web);
             splitMain.Panel2MinSize = 250;
             splitMain.Size = new Size(1200, 655);
-            splitMain.SplitterDistance = 600;
+            splitMain.SplitterDistance = 720;
             splitMain.SplitterWidth = 6;
             splitMain.TabIndex = 0;
             // 

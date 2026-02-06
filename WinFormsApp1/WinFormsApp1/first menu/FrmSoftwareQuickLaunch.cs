@@ -15,14 +15,11 @@ namespace WinFormsApp1.first_menu
 {
     public partial class FrmSoftwareQuickLaunch : UIForm
     {
-        private const string ConfigDirectoryName = "Config";
-        private const string ConfigFileName = "software_launcher.json";
-
         private readonly BindingList<SoftwareItem> softwareItems = new BindingList<SoftwareItem>();
         private readonly BindingSource bindingSource = new BindingSource();
         private bool loadingConfig = false;
 
-        private string ConfigFullPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ConfigDirectoryName, ConfigFileName);
+        private string ConfigFullPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Common", "Data", "SoftwareLauncher", "software_launcher.json");
 
         public FrmSoftwareQuickLaunch()
         {

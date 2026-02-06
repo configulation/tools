@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Web.WebView2.Core;
 using Newtonsoft.Json;
 using Sunny.UI;
+using WinFormsApp1.Common.Database.Services;
 
 namespace WinFormsApp1.second_menu
 {
@@ -16,27 +15,32 @@ namespace WinFormsApp1.second_menu
 	{
 		private const string TargetUrl = "https://esquel.yingdaoapps.com/public/app/821296610254688256/%E8%BD%A6%E4%BD%8D%E6%8A%BD%E7%AD%BE/defaultPage";
 
-		private readonly string configFilePath;
-		private AppConfig config;
+		private readonly YingdaoConfigService configService;
 		private bool isRunning;
 		private bool isLoadingSettings;
 		private System.Windows.Forms.Timer dailyTimer;
 		private int currentUserIndex = -1;
+		
+		// 标记待删除的行（员工号列表）
+		private readonly HashSet<string> pendingDeleteEmployeeIds = new HashSet<string>();
 
 		public FrmYingdaoAutoSubmit()
 		{
 			InitializeComponent();
 
-			string cfgDir = Path.Combine(Application.StartupPath, "Config");
-			configFilePath = Path.Combine(cfgDir, "yingdao_config.json");
+			try
+			{
+				configService = new YingdaoConfigService();
+				InitializeDataGridView();
+				LoadConfigToUI();
+			}
+			catch (Exception ex)
+			{
+				UIMessageBox.ShowError($"初始化配置服务失败：{ex.Message}\n\n请确认：\n1. appsettings.json 文件存在\n2. 数据库连接正常\n3. sys_config 表已创建");
+			}
 			
-			InitializeDataGridView();
-			LoadConfig();
-			LoadConfigToUI();
-			
-			// 初始化定时器
 			dailyTimer = new System.Windows.Forms.Timer();
-			dailyTimer.Interval = 60000; // 1分钟
+			dailyTimer.Interval = 60000;
 			dailyTimer.Tick += DailyTimer_Tick;
 		}
 
@@ -91,12 +95,17 @@ namespace WinFormsApp1.second_menu
 
 		private async void FrmYingdaoAutoSubmit_Load(object sender, EventArgs e)
 		{
+			if (configService == null)
+			{
+				AppendLog("配置服务未初始化，请检查数据库连接");
+				return;
+			}
+			
 			dailyTimer.Start();
 			string daysDesc = GetEnabledDaysDescription();
 			AppendLog($"定时器已启动，每分钟检查执行条件（{daysDesc} 0:00-13:30）");
 			
-			// 启动时检查
-			if (config.AutoStartEnabled && ShouldRunToday() && IsInTimeWindow())
+			if (configService.GetAutoStartEnabled() && ShouldRunToday() && IsInTimeWindow())
 			{
 				AppendLog("启动时检测到需要执行");
 				await RunAllUsersAsync();
@@ -105,13 +114,14 @@ namespace WinFormsApp1.second_menu
 
 		private async void DailyTimer_Tick(object sender, EventArgs e)
 		{
-			if (!config.AutoStartEnabled) return;
+			if (configService == null) return;
+			if (!configService.GetAutoStartEnabled()) return;
 			if (!ShouldRunToday()) return;
 			if (!IsInTimeWindow()) return;
 			
-			// 检查是否有用户今天还没执行
 			string today = DateTime.Today.ToString("yyyy-MM-dd");
-			bool hasUnfinished = config.Users.Any(u => u.Enabled && u.LastSubmittedDate != today);
+			var users = configService.GetAllUsers();
+			bool hasUnfinished = users.Any(u => u.Enabled && u.LastSubmittedDate != today);
 			
 			if (hasUnfinished)
 			{
@@ -120,28 +130,21 @@ namespace WinFormsApp1.second_menu
 			}
 		}
 
-		/// <summary>
-		/// 判断今天是否需要抽签（根据配置的星期）
-		/// </summary>
 		private bool ShouldRunToday()
 		{
+			if (configService == null) return false;
 			int dayOfWeek = (int)DateTime.Today.DayOfWeek;
-			return config.EnabledDays.Contains(dayOfWeek);
+			return configService.GetEnabledDays().Contains(dayOfWeek);
 		}
 
-		/// <summary>
-		/// 获取启用的星期描述
-		/// </summary>
 		private string GetEnabledDaysDescription()
 		{
+			if (configService == null) return "未配置";
 			string[] dayNames = { "周日", "周一", "周二", "周三", "周四", "周五", "周六" };
-			var enabledNames = config.EnabledDays.OrderBy(d => d).Select(d => dayNames[d]);
+			var enabledNames = configService.GetEnabledDays().OrderBy(d => d).Select(d => dayNames[d]);
 			return string.Join("、", enabledNames);
 		}
 
-		/// <summary>
-		/// 判断当前是否在可执行时间范围内（0:00 - 13:30）
-		/// </summary>
 		private bool IsInTimeWindow()
 		{
 			var now = DateTime.Now;
@@ -162,39 +165,79 @@ namespace WinFormsApp1.second_menu
 
 		private void btnDeleteUser_Click(object sender, EventArgs e)
 		{
-			if (dgvUsers.CurrentRow == null)
+			if (dgvUsers.CurrentRow == null || dgvUsers.CurrentRow.IsNewRow)
 			{
 				UIMessageTip.ShowWarning("请先选择要删除的用户");
 				return;
 			}
 			
 			int rowIndex = dgvUsers.CurrentRow.Index;
-			if (rowIndex >= 0 && !dgvUsers.CurrentRow.IsNewRow)
+			string employeeId = dgvUsers.Rows[rowIndex].Cells["colEmployeeId"].Value?.ToString();
+			
+			if (string.IsNullOrWhiteSpace(employeeId))
 			{
+				// 如果是新添加还未保存的行，直接删除
 				dgvUsers.Rows.RemoveAt(rowIndex);
-				AppendLog("已删除用户，请点击保存配置");
+				AppendLog("已删除未保存的新行");
+				return;
+			}
+			
+			// 标记为待删除（变红色）
+			if (!pendingDeleteEmployeeIds.Contains(employeeId))
+			{
+				pendingDeleteEmployeeIds.Add(employeeId);
+				dgvUsers.Rows[rowIndex].DefaultCellStyle.BackColor = Color.LightCoral;
+				dgvUsers.Rows[rowIndex].DefaultCellStyle.ForeColor = Color.White;
+				AppendLog($"已标记删除用户 {employeeId}，点击保存后生效");
+			}
+			else
+			{
+				// 取消删除标记
+				pendingDeleteEmployeeIds.Remove(employeeId);
+				dgvUsers.Rows[rowIndex].DefaultCellStyle.BackColor = Color.White;
+				dgvUsers.Rows[rowIndex].DefaultCellStyle.ForeColor = Color.Black;
+				AppendLog($"已取消删除用户 {employeeId}");
 			}
 		}
 
 		private void btnSaveConfig_Click(object sender, EventArgs e)
 		{
-			SaveUIToConfig();
-			SaveConfig();
-			UIMessageTip.ShowOk("配置已保存");
-			AppendLog("配置已保存到文件");
+			try
+			{
+				// 先处理删除操作
+				foreach (var employeeId in pendingDeleteEmployeeIds)
+				{
+					configService.DeleteUser(employeeId);
+					AppendLog($"已删除用户: {employeeId}");
+				}
+				pendingDeleteEmployeeIds.Clear();
+				
+				// 保存配置
+				SaveUIToConfig();
+				
+				// 重新加载数据
+				LoadConfigToUI();
+				
+				UIMessageTip.ShowOk("配置已保存");
+				AppendLog("配置已保存到数据库");
+			}
+			catch (Exception ex)
+			{
+				UIMessageBox.ShowError($"保存失败：{ex.Message}");
+				AppendLog($"保存失败：{ex.Message}");
+			}
 		}
 
 		private void ChkAutoStart_CheckedChanged(object sender, EventArgs e)
 		{
 			if (isLoadingSettings) return;
-			config.AutoStartEnabled = chkAutoStart.Checked;
-			AppendLog($"自动执行已{(config.AutoStartEnabled ? "开启" : "关闭")}");
+			configService.SetAutoStartEnabled(chkAutoStart.Checked);
+			AppendLog($"自动执行已{(chkAutoStart.Checked ? "开启" : "关闭")}");
 		}
 
 		private void ChkDay_CheckedChanged(object sender, EventArgs e)
 		{
 			if (isLoadingSettings) return;
-			// 星期选择变化时自动保存
 			SaveDaysFromUI();
 			string daysDesc = GetEnabledDaysDescription();
 			AppendLog($"执行日期已更新：{daysDesc}");
@@ -202,29 +245,37 @@ namespace WinFormsApp1.second_menu
 
 		private void SaveDaysFromUI()
 		{
-			config.EnabledDays.Clear();
-			if (chkSunday.Checked) config.EnabledDays.Add(0);
-			if (chkMonday.Checked) config.EnabledDays.Add(1);
-			if (chkTuesday.Checked) config.EnabledDays.Add(2);
-			if (chkWednesday.Checked) config.EnabledDays.Add(3);
-			if (chkThursday.Checked) config.EnabledDays.Add(4);
-			if (chkFriday.Checked) config.EnabledDays.Add(5);
-			if (chkSaturday.Checked) config.EnabledDays.Add(6);
+			var days = new List<int>();
+			if (chkSunday.Checked) days.Add(0);
+			if (chkMonday.Checked) days.Add(1);
+			if (chkTuesday.Checked) days.Add(2);
+			if (chkWednesday.Checked) days.Add(3);
+			if (chkThursday.Checked) days.Add(4);
+			if (chkFriday.Checked) days.Add(5);
+			if (chkSaturday.Checked) days.Add(6);
+			configService.SetEnabledDays(days);
 		}
 
 		private void LoadDaysToUI()
 		{
-			chkSunday.Checked = config.EnabledDays.Contains(0);
-			chkMonday.Checked = config.EnabledDays.Contains(1);
-			chkTuesday.Checked = config.EnabledDays.Contains(2);
-			chkWednesday.Checked = config.EnabledDays.Contains(3);
-			chkThursday.Checked = config.EnabledDays.Contains(4);
-			chkFriday.Checked = config.EnabledDays.Contains(5);
-			chkSaturday.Checked = config.EnabledDays.Contains(6);
+			var days = configService.GetEnabledDays();
+			chkSunday.Checked = days.Contains(0);
+			chkMonday.Checked = days.Contains(1);
+			chkTuesday.Checked = days.Contains(2);
+			chkWednesday.Checked = days.Contains(3);
+			chkThursday.Checked = days.Contains(4);
+			chkFriday.Checked = days.Contains(5);
+			chkSaturday.Checked = days.Contains(6);
 		}
 
 		private async Task RunAllUsersAsync()
 		{
+			if (configService == null)
+			{
+				AppendLog("配置服务未初始化");
+				return;
+			}
+			
 			if (isRunning)
 			{
 				AppendLog("已有任务在执行中，请稍候");
@@ -238,19 +289,13 @@ namespace WinFormsApp1.second_menu
 				return;
 			}
 
-			//if (!IsInTimeWindow())
-			//{
-			//	AppendLog("当前时间超过13:30，已过抽签截止时间");
-			//	return;
-			//}
-
 			isRunning = true;
 			btnRun.Enabled = false;
 
 			try
 			{
 				string today = DateTime.Today.ToString("yyyy-MM-dd");
-				var enabledUsers = config.Users.Where(u => u.Enabled).ToList();
+				var enabledUsers = configService.GetAllUsers().Where(u => u.Enabled).ToList();
 				
 				if (enabledUsers.Count == 0)
 				{
@@ -263,7 +308,6 @@ namespace WinFormsApp1.second_menu
 				for (int i = 0; i < enabledUsers.Count; i++)
 				{
 					var user = enabledUsers[i];
-					currentUserIndex = config.Users.IndexOf(user);
 					
 					if (user.LastSubmittedDate == today)
 					{
@@ -285,11 +329,9 @@ namespace WinFormsApp1.second_menu
 						user.LastResult = "失败或已提交";
 					}
 					
-					// 更新UI
-					UpdateUserRowStatus(currentUserIndex, user);
-					SaveConfig();
+					configService.SaveUser(user);
+					LoadConfigToUI();
 
-					// 用户之间间隔
 					if (i < enabledUsers.Count - 1)
 					{
 						AppendLog("等待5秒后处理下一个用户...");
@@ -311,7 +353,7 @@ namespace WinFormsApp1.second_menu
 			}
 		}
 
-		private async Task<bool> RunSingleUserAsync(UserConfig user)
+		private async Task<bool> RunSingleUserAsync(YingdaoUserConfig user)
 		{
 			try
 			{
@@ -328,7 +370,6 @@ namespace WinFormsApp1.second_menu
 
 				await Task.Delay(2000);
 
-				// 检查表单是否已填写
 				var alreadyFilled = await IsFormAlreadyFilledAsync();
 				if (alreadyFilled)
 				{
@@ -345,7 +386,6 @@ namespace WinFormsApp1.second_menu
 					}
 				}
 
-				// 查找提交按钮
 				var probe = await ProbeSubmitButtonAsync();
 				if (probe == null || !probe.Found)
 				{
@@ -382,68 +422,22 @@ namespace WinFormsApp1.second_menu
 			}
 		}
 
-		private void UpdateUserRowStatus(int index, UserConfig user)
-		{
-			if (index < 0 || index >= dgvUsers.Rows.Count) return;
-			
-			if (InvokeRequired)
-			{
-				BeginInvoke(new Action(() => UpdateUserRowStatus(index, user)));
-				return;
-			}
-
-			dgvUsers.Rows[index].Cells["colLastDate"].Value = user.LastSubmittedDate;
-			dgvUsers.Rows[index].Cells["colLastResult"].Value = user.LastResult;
-		}
-
-
 		#region 配置管理
-
-		private void LoadConfig()
-		{
-			try
-			{
-				if (File.Exists(configFilePath))
-				{
-					string json = File.ReadAllText(configFilePath, Encoding.UTF8);
-					config = JsonConvert.DeserializeObject<AppConfig>(json) ?? new AppConfig();
-				}
-				else
-				{
-					config = new AppConfig();
-				}
-			}
-			catch
-			{
-				config = new AppConfig();
-			}
-		}
-
-		private void SaveConfig()
-		{
-			try
-			{
-				string dir = Path.GetDirectoryName(configFilePath);
-				if (!string.IsNullOrWhiteSpace(dir)) Directory.CreateDirectory(dir);
-				string json = JsonConvert.SerializeObject(config, Formatting.Indented);
-				File.WriteAllText(configFilePath, json, Encoding.UTF8);
-			}
-			catch (Exception ex)
-			{
-				AppendLog($"保存配置失败：{ex.Message}");
-			}
-		}
 
 		private void LoadConfigToUI()
 		{
+			if (configService == null) return;
+			
 			isLoadingSettings = true;
 			try
 			{
-				chkAutoStart.Checked = config.AutoStartEnabled;
+				chkAutoStart.Checked = configService.GetAutoStartEnabled();
 				LoadDaysToUI();
 				
 				dgvUsers.Rows.Clear();
-				foreach (var user in config.Users)
+				pendingDeleteEmployeeIds.Clear();
+				
+				foreach (var user in configService.GetAllUsers())
 				{
 					dgvUsers.Rows.Add(
 						user.Enabled,
@@ -456,6 +450,10 @@ namespace WinFormsApp1.second_menu
 					);
 				}
 			}
+			catch (Exception ex)
+			{
+				AppendLog($"加载配置失败：{ex.Message}");
+			}
 			finally
 			{
 				isLoadingSettings = false;
@@ -464,24 +462,36 @@ namespace WinFormsApp1.second_menu
 
 		private void SaveUIToConfig()
 		{
-			config.AutoStartEnabled = chkAutoStart.Checked;
+			configService.SetAutoStartEnabled(chkAutoStart.Checked);
 			SaveDaysFromUI();
-			config.Users.Clear();
 			
 			foreach (DataGridViewRow row in dgvUsers.Rows)
 			{
 				if (row.IsNewRow) continue;
 				
-				config.Users.Add(new UserConfig
+				string employeeId = row.Cells["colEmployeeId"].Value?.ToString() ?? "";
+				
+				// 跳过标记为删除的行
+				if (pendingDeleteEmployeeIds.Contains(employeeId))
+				{
+					continue;
+				}
+				
+				var user = new YingdaoUserConfig
 				{
 					Enabled = Convert.ToBoolean(row.Cells["colEnabled"].Value ?? false),
 					Factory = row.Cells["colFactory"].Value?.ToString() ?? "",
-					EmployeeId = row.Cells["colEmployeeId"].Value?.ToString() ?? "",
+					EmployeeId = employeeId,
 					Phone = row.Cells["colPhone"].Value?.ToString() ?? "",
 					CarNo = row.Cells["colCarNo"].Value?.ToString() ?? "",
 					LastSubmittedDate = row.Cells["colLastDate"].Value?.ToString() ?? "",
 					LastResult = row.Cells["colLastResult"].Value?.ToString() ?? ""
-				});
+				};
+				
+				if (!string.IsNullOrWhiteSpace(user.EmployeeId))
+				{
+					configService.SaveUser(user);
+				}
 			}
 		}
 
@@ -489,16 +499,14 @@ namespace WinFormsApp1.second_menu
 
 		#region 表单操作
 
-		private async Task FillFormAsync(UserConfig user)
+		private async Task FillFormAsync(YingdaoUserConfig user)
 		{
-			// 先选择厂区
 			if (!string.IsNullOrWhiteSpace(user.Factory))
 			{
 				await SelectFactoryAsync(user.Factory);
 				await Task.Delay(500);
 			}
 
-			// 填写员工号
 			if (!string.IsNullOrWhiteSpace(user.EmployeeId))
 			{
 				await SetInputValueAsync("txtEmployeeID", user.EmployeeId);
@@ -506,14 +514,12 @@ namespace WinFormsApp1.second_menu
 				await Task.Delay(3500);
 			}
 
-			// 填写手机号
 			if (!string.IsNullOrWhiteSpace(user.Phone))
 			{
 				await SetInputValueAsync("txtPhoneNo", user.Phone);
 				await Task.Delay(300);
 			}
 
-			// 填写车牌号
 			if (!string.IsNullOrWhiteSpace(user.CarNo))
 			{
 				await SetInputValueAsync("txtCarNo", user.CarNo);
@@ -552,7 +558,6 @@ namespace WinFormsApp1.second_menu
 		{
 			AppendLog($"选择厂区: {factoryName}");
 
-			// 点击打开弹窗
 			string openScript = @"
 				(function() {
 					var root = document.querySelector('[data-widget-id=""cmbFty""]');
@@ -580,7 +585,6 @@ namespace WinFormsApp1.second_menu
 			string openResult = await web.ExecuteScriptAsync(openScript);
 			AppendLog($"打开弹窗: {openResult}");
 
-			// 等待弹窗
 			for (int i = 0; i < 25; i++)
 			{
 				await Task.Delay(200);
@@ -603,7 +607,6 @@ namespace WinFormsApp1.second_menu
 
 			await Task.Delay(500);
 
-			// 选择厂区
 			string escapedFactory = JsEscape(factoryName);
 			string selectScript = $@"
 				(function() {{
@@ -633,7 +636,6 @@ namespace WinFormsApp1.second_menu
 			AppendLog($"厂区选择: {selectResult}");
 			await Task.Delay(500);
 
-			// 点击确定
 			string confirmScript = @"
 				(function() {
 					var popup = document.querySelector('.adm-popup-body');
@@ -871,25 +873,6 @@ namespace WinFormsApp1.second_menu
 		#endregion
 
 		#region 数据模型
-
-		private class AppConfig
-		{
-			public bool AutoStartEnabled { get; set; } = true;  // 默认开启自动执行
-			public List<UserConfig> Users { get; set; } = new List<UserConfig>();
-			// 执行日期配置：周日=0, 周一=1, ..., 周六=6
-			public List<int> EnabledDays { get; set; } = new List<int> { 0, 1, 2, 3, 4 }; // 默认周日-周四
-		}
-
-		private class UserConfig
-		{
-			public bool Enabled { get; set; } = true;
-			public string Factory { get; set; } = "";
-			public string EmployeeId { get; set; } = "";
-			public string Phone { get; set; } = "";
-			public string CarNo { get; set; } = "";
-			public string LastSubmittedDate { get; set; } = "";
-			public string LastResult { get; set; } = "";
-		}
 
 		private class SubmitButtonProbeResult
 		{

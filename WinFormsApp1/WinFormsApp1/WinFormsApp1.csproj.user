@@ -46,6 +46,42 @@
     <Compile Update="second menu\ChessRecognizer\Forms\FrmSettings.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="second menu\EquipmentMaintenanceSystem\Forms\FrmBaseDataEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="second menu\EquipmentMaintenanceSystem\Forms\FrmBaseDataManagement.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="second menu\EquipmentMaintenanceSystem\Forms\FrmDataImportExport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="second menu\EquipmentMaintenanceSystem\Forms\FrmEquipmentEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="second menu\EquipmentMaintenanceSystem\Forms\FrmEquipmentManagement.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="second menu\EquipmentMaintenanceSystem\Forms\FrmMaintenanceExecute.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="second menu\EquipmentMaintenanceSystem\Forms\FrmMaintenanceItemSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="second menu\EquipmentMaintenanceSystem\Forms\FrmMaintenanceMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="second menu\EquipmentMaintenanceSystem\Forms\FrmMaintenancePlan.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="second menu\EquipmentMaintenanceSystem\Forms\FrmMaintenanceRecord.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="second menu\EquipmentMaintenanceSystem\Forms\FrmToolEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="second menu\EquipmentMaintenanceSystem\Forms\FrmToolManagement.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="second menu\FrmBelongTo1jicaidan.cs">
       <SubType>Form</SubType>
     </Compile>

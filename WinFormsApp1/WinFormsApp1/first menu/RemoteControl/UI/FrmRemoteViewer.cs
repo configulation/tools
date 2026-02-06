@@ -21,6 +21,7 @@ namespace WinFormsApp1.first_menu.RemoteControl
         private readonly UIButton btnToggleView;
         private readonly UIButton btnFullScreen;
 
+        private System.Windows.Forms.Timer checkMouseTimer;
         private bool isFullScreen;
         private FormBorderStyle normalBorderStyle;
         private FormWindowState normalWindowState;
@@ -41,6 +42,13 @@ namespace WinFormsApp1.first_menu.RemoteControl
             ShowTitle = true;
             Padding = new Padding(0, 35, 0, 0);
             Style = UIStyle.Custom;
+
+            // 启用双缓冲，减少全屏时的闪烁和卡顿
+            DoubleBuffered = true;
+            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
+
+            checkMouseTimer = new System.Windows.Forms.Timer { Interval = 200 };
+            checkMouseTimer.Tick += (s, e) => CheckMousePosition();
 
             panelTop = new UIPanel
             {
@@ -265,18 +273,31 @@ namespace WinFormsApp1.first_menu.RemoteControl
                 ShowTitle = false;
                 Padding = new Padding(0);
 
+                // 彻底覆盖任务栏的关键：使用 Normal 状态并手动设置 Bounds 为屏幕全量尺寸
                 WindowState = FormWindowState.Normal;
                 FormBorderStyle = FormBorderStyle.None;
 
                 var screenBounds = Screen.FromControl(this).Bounds;
                 Bounds = screenBounds;
-                WindowState = FormWindowState.Maximized;
+
+                // 切换顶部面板为“向日葵”悬浮模式
+                panelTop.Dock = DockStyle.None;
+                panelTop.Width = 800;
+                panelTop.Location = new Point((Width - panelTop.Width) / 2, 0);
+                panelTop.Visible = false;
+                panelTop.BringToFront();
+
+                checkMouseTimer.Start();
                 BringToFront();
             }
             else
             {
                 isFullScreen = false;
                 btnFullScreen.Text = "全屏";
+                checkMouseTimer.Stop();
+
+                panelTop.Visible = true;
+                panelTop.Dock = DockStyle.Top;
 
                 WindowState = FormWindowState.Normal;
                 FormBorderStyle = normalBorderStyle;
@@ -289,6 +310,32 @@ namespace WinFormsApp1.first_menu.RemoteControl
             }
 
             ApplyTopLayout();
+        }
+
+        private void CheckMousePosition()
+        {
+            if (!isFullScreen) return;
+
+            Point mousePos = Cursor.Position;
+            Point clientMousePos = PointToClient(mousePos);
+
+            // 鼠标移动到最顶端 10 像素内时显示悬浮栏
+            if (clientMousePos.Y <= 10)
+            {
+                if (!panelTop.Visible)
+                {
+                    panelTop.Visible = true;
+                    panelTop.BringToFront();
+                }
+            }
+            // 鼠标离开悬浮栏区域后自动隐藏
+            else if (clientMousePos.Y > panelTop.Height + 20)
+            {
+                if (panelTop.Visible)
+                {
+                    panelTop.Visible = false;
+                }
+            }
         }
 
         public void SetStatus(bool connected)

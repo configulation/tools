@@ -63,3 +63,16 @@ WinFormsApp1/WinFormsApp1/obj/
 **/*.user
 **/*.suo
 **/WebView2/
+
+# 忽略配置文件（包含敏感信息）
+**/App.config
+**/Web.config
+**/appsettings.json
+
+# 忽略obj文件夹
+**/obj/
+
+**/.cursor
+WinFormsApp1/RelayServer/bin/Debug/net8.0/RemoteControl.RelayServer.dll
+WinFormsApp1/RelayServer/bin/Debug/net8.0/RemoteControl.RelayServer.exe
+WinFormsApp1/RelayServer/bin/Debug/net8.0/RemoteControl.RelayServer.pdb

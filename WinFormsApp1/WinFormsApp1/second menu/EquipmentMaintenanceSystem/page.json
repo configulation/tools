@@ -1,0 +1,55 @@
+{
+  "projectName": "EquipmentMaintenanceSystem",
+  "description": "设备工装保养管理系统",
+  "version": "1.0.0",
+  "mainForm": "FrmMaintenanceMain",
+  "namespace": "WinFormsApp1.EquipmentMaintenanceSystem",
+  "dependencies": {
+    "SunnyUI": "3.8.0",
+    "Newtonsoft.Json": "13.0.3"
+  },
+  "features": [
+    "设备登记管理",
+    "工装使用跟踪",
+    "保养计划自动生成",
+    "保养记录管理",
+    "到期提醒功能",
+    "使用次数计算"
+  ],
+  "dataFiles": {
+    "equipment": "Data/EquipmentMaintenance/equipment.json",
+    "tools": "Data/EquipmentMaintenance/tools.json",
+    "maintenanceRecords": "Data/EquipmentMaintenance/maintenance_records.json"
+  },
+  "uiSettings": {
+    "theme": "LightBlue",
+    "gridRowHeight": 35,
+    "highlightColors": {
+      "overdue": "#FFCDD2",
+      "warning": "#FFF9C4",
+      "normal": "#E8F5E9"
+    }
+  },
+  "modules": [
+    {
+      "name": "设备管理",
+      "form": "FrmEquipmentManagement",
+      "description": "设备登记、编辑、删除、保养执行"
+    },
+    {
+      "name": "工装管理",
+      "form": "FrmToolManagement",
+      "description": "工装登记、编辑、删除、使用次数跟踪"
+    },
+    {
+      "name": "保养计划",
+      "form": "待开发",
+      "description": "日历视图、计划查询"
+    },
+    {
+      "name": "保养记录",
+      "form": "待开发",
+      "description": "历史记录查询、统计分析"
+    }
+  ]
+}

@@ -37,7 +37,9 @@ namespace WinFormsApp1.second_menu.ChessRecognizer.Config
         /// </summary>
         private static string ConfigPath => Path.Combine(
             AppDomain.CurrentDomain.BaseDirectory,
-            "Config",
+            "Common",
+            "Data",
+            "ChessRecognizer",
             "chess_recognizer_settings.json"
         );
 
