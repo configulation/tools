@@ -1,0 +1,281 @@
+[
+  {
+    "Id": "172473b3-599a-4e65-979c-94cfa1e381d1",
+    "CategoryId": "58303ad9-80a7-4c9c-a29b-8d69dab30b03",
+    "Code": "EQ01-01",
+    "Name": "印刷机",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.9768464+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9768959+08:00"
+  },
+  {
+    "Id": "272473b3-599a-4e65-979c-94cfa1e381d2",
+    "CategoryId": "58303ad9-80a7-4c9c-a29b-8d69dab30b03",
+    "Code": "EQ01-02",
+    "Name": "注塑机",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.976897+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9768971+08:00"
+  },
+  {
+    "Id": "372473b3-599a-4e65-979c-94cfa1e381d3",
+    "CategoryId": "58303ad9-80a7-4c9c-a29b-8d69dab30b03",
+    "Code": "EQ01-03",
+    "Name": "冲压机",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.976898+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9768981+08:00"
+  },
+  {
+    "Id": "472473b3-599a-4e65-979c-94cfa1e381d4",
+    "CategoryId": "58303ad9-80a7-4c9c-a29b-8d69dab30b03",
+    "Code": "EQ01-04",
+    "Name": "焊接机",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.976899+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9768991+08:00"
+  },
+  {
+    "Id": "572473b3-599a-4e65-979c-94cfa1e381d5",
+    "CategoryId": "58303ad9-80a7-4c9c-a29b-8d69dab30b03",
+    "Code": "EQ01-05",
+    "Name": "数控车床",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.9769+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9769001+08:00"
+  },
+  {
+    "Id": "672473b3-599a-4e65-979c-94cfa1e381d6",
+    "CategoryId": "58303ad9-80a7-4c9c-a29b-8d69dab30b03",
+    "Code": "EQ01-06",
+    "Name": "铣床",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.976901+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9769011+08:00"
+  },
+  {
+    "Id": "772473b3-599a-4e65-979c-94cfa1e381d7",
+    "CategoryId": "58303ad9-80a7-4c9c-a29b-8d69dab30b03",
+    "Code": "EQ01-07",
+    "Name": "激光切割机",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.976902+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9769021+08:00"
+  },
+  {
+    "Id": "872473b3-599a-4e65-979c-94cfa1e381d8",
+    "CategoryId": "58303ad9-80a7-4c9c-a29b-8d69dab30b03",
+    "Code": "EQ01-08",
+    "Name": "磨床",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.976903+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9769031+08:00"
+  },
+  {
+    "Id": "972473b3-599a-4e65-979c-94cfa1e381d9",
+    "CategoryId": "990cf8f8-a9fb-4728-9ae2-2b4c0779d307",
+    "Code": "EQ02-01",
+    "Name": "X光检测仪",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.976904+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9769041+08:00"
+  },
+  {
+    "Id": "a72473b3-599a-4e65-979c-94cfa1e381da",
+    "CategoryId": "990cf8f8-a9fb-4728-9ae2-2b4c0779d307",
+    "Code": "EQ02-02",
+    "Name": "三坐标测量仪",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.976905+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9769051+08:00"
+  },
+  {
+    "Id": "b72473b3-599a-4e65-979c-94cfa1e381db",
+    "CategoryId": "990cf8f8-a9fb-4728-9ae2-2b4c0779d307",
+    "Code": "EQ02-03",
+    "Name": "硬度计",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.976906+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9769061+08:00"
+  },
+  {
+    "Id": "c72473b3-599a-4e65-979c-94cfa1e381dc",
+    "CategoryId": "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+    "Code": "EQ03-01",
+    "Name": "自动包装机",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.976907+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9769071+08:00"
+  },
+  {
+    "Id": "d72473b3-599a-4e65-979c-94cfa1e381dd",
+    "CategoryId": "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+    "Code": "EQ03-02",
+    "Name": "贴标机",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.976908+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9769081+08:00"
+  },
+  {
+    "Id": "e72473b3-599a-4e65-979c-94cfa1e381de",
+    "CategoryId": "b2c3d4e5-f6a7-4b5c-9d0e-1f2a3b4c5d6e",
+    "Code": "EQ04-01",
+    "Name": "空压机",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.976909+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9769091+08:00"
+  },
+  {
+    "Id": "f72473b3-599a-4e65-979c-94cfa1e381df",
+    "CategoryId": "b2c3d4e5-f6a7-4b5c-9d0e-1f2a3b4c5d6e",
+    "Code": "EQ04-02",
+    "Name": "冷却塔",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.97691+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9769101+08:00"
+  },
+  {
+    "Id": "172573b3-599a-4e65-979c-94cfa1e381e1",
+    "CategoryId": "ef182aed-ccd7-4696-9434-6ef66e00b66d",
+    "Code": "TL01-01",
+    "Name": "钻头",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.976911+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9769111+08:00"
+  },
+  {
+    "Id": "272573b3-599a-4e65-979c-94cfa1e381e2",
+    "CategoryId": "ef182aed-ccd7-4696-9434-6ef66e00b66d",
+    "Code": "TL01-02",
+    "Name": "铣刀",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.976912+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9769121+08:00"
+  },
+  {
+    "Id": "372573b3-599a-4e65-979c-94cfa1e381e3",
+    "CategoryId": "ef182aed-ccd7-4696-9434-6ef66e00b66d",
+    "Code": "TL01-03",
+    "Name": "车刀",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.976913+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9769131+08:00"
+  },
+  {
+    "Id": "472573b3-599a-4e65-979c-94cfa1e381e4",
+    "CategoryId": "ef182aed-ccd7-4696-9434-6ef66e00b66d",
+    "Code": "TL01-04",
+    "Name": "丝锥",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.976914+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9769141+08:00"
+  },
+  {
+    "Id": "572573b3-599a-4e65-979c-94cfa1e381e5",
+    "CategoryId": "ef182aed-ccd7-4696-9434-6ef66e00b66d",
+    "Code": "TL01-05",
+    "Name": "铰刀",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.976915+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9769151+08:00"
+  },
+  {
+    "Id": "672573b3-599a-4e65-979c-94cfa1e381e6",
+    "CategoryId": "ef182aed-ccd7-4696-9434-6ef66e00b66d",
+    "Code": "TL01-06",
+    "Name": "锯片",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.976916+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9769161+08:00"
+  },
+  {
+    "Id": "772573b3-599a-4e65-979c-94cfa1e381e7",
+    "CategoryId": "58033f82-11da-434a-ab24-2ef588c39451",
+    "Code": "TL02-01",
+    "Name": "游标卡尺",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.976917+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9769171+08:00"
+  },
+  {
+    "Id": "872573b3-599a-4e65-979c-94cfa1e381e8",
+    "CategoryId": "58033f82-11da-434a-ab24-2ef588c39451",
+    "Code": "TL02-02",
+    "Name": "千分尺",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.976918+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9769181+08:00"
+  },
+  {
+    "Id": "972573b3-599a-4e65-979c-94cfa1e381e9",
+    "CategoryId": "58033f82-11da-434a-ab24-2ef588c39451",
+    "Code": "TL02-03",
+    "Name": "百分表",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.976919+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9769191+08:00"
+  },
+  {
+    "Id": "a72573b3-599a-4e65-979c-94cfa1e381ea",
+    "CategoryId": "58033f82-11da-434a-ab24-2ef588c39451",
+    "Code": "TL02-04",
+    "Name": "塞规",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.97692+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9769201+08:00"
+  },
+  {
+    "Id": "b72573b3-599a-4e65-979c-94cfa1e381eb",
+    "CategoryId": "58033f82-11da-434a-ab24-2ef588c39451",
+    "Code": "TL02-05",
+    "Name": "高度尺",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.976921+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9769211+08:00"
+  },
+  {
+    "Id": "c72573b3-599a-4e65-979c-94cfa1e381ec",
+    "CategoryId": "c3d4e5f6-a7b8-4c5d-0e1f-2a3b4c5d6e7f",
+    "Code": "TL03-01",
+    "Name": "虎钳",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.976922+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9769221+08:00"
+  },
+  {
+    "Id": "d72573b3-599a-4e65-979c-94cfa1e381ed",
+    "CategoryId": "c3d4e5f6-a7b8-4c5d-0e1f-2a3b4c5d6e7f",
+    "Code": "TL03-02",
+    "Name": "分度头",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.976923+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9769231+08:00"
+  },
+  {
+    "Id": "e72573b3-599a-4e65-979c-94cfa1e381ee",
+    "CategoryId": "c3d4e5f6-a7b8-4c5d-0e1f-2a3b4c5d6e7f",
+    "Code": "TL03-03",
+    "Name": "卡盘",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.976924+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9769241+08:00"
+  },
+  {
+    "Id": "f72573b3-599a-4e65-979c-94cfa1e381ef",
+    "CategoryId": "d4e5f6a7-b8c9-4d5e-1f2a-3b4c5d6e7f8a",
+    "Code": "TL04-01",
+    "Name": "焊枪",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T17:43:03.976925+08:00",
+    "UpdateTime": "2026-02-03T17:43:03.9769251+08:00"
+  },
+  {
+    "Id": "5954d703-a970-4944-b848-0320a19fb83b",
+    "CategoryId": "58303ad9-80a7-4c9c-a29b-8d69dab30b03",
+    "Code": "kk1",
+    "Name": "kk1",
+    "IsActive": true,
+    "CreateTime": "2026-02-04T10:33:51.3614958+08:00",
+    "UpdateTime": "2026-02-04T10:33:51.3614963+08:00"
+  }
+]

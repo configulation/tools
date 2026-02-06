@@ -1,15 +1,134 @@
 using Sunny.UI;
 using System;
 using System.Windows.Forms;
+using WinFormsApp1.Common.Database;
 
 namespace WinFormsApp1.EquipmentMaintenanceSystem.Forms
 {
     public partial class FrmMaintenanceMain : UIForm
     {
+        /// <summary>
+        /// 当前程序版本号（每次发版时修改此值）
+        /// </summary>
+        private const string APP_VERSION = "1.0.0";
+
+        /// <summary>
+        /// 版本定时检查器（每1小时轮询一次数据库）
+        /// </summary>
+        private System.Windows.Forms.Timer _versionCheckTimer;
+
         public FrmMaintenanceMain()
         {
             InitializeComponent();
-            InitializeUI();
+            if (CheckVersion())
+            {
+                InitializeUI();
+                StartVersionCheckTimer();
+            }
+        }
+
+        /// <summary>
+        /// 启动版本定时检查（每1小时查一次数据库）
+        /// 不重启程序也能拦截
+        /// </summary>
+        private void StartVersionCheckTimer()
+        {
+            _versionCheckTimer = new System.Windows.Forms.Timer();
+            _versionCheckTimer.Interval = 60 * 60 * 1000; // 1小时 = 3600000毫秒
+            _versionCheckTimer.Tick += (s, e) =>
+            {
+                if (!CheckVersion())
+                {
+                    _versionCheckTimer.Stop();
+                    this.Close();
+                }
+            };
+            _versionCheckTimer.Start();
+        }
+
+        /// <summary>
+        /// 窗体关闭时停止定时器，释放资源
+        /// </summary>
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            _versionCheckTimer?.Stop();
+            _versionCheckTimer?.Dispose();
+            base.OnFormClosed(e);
+        }
+
+        /// <summary>
+        /// 版本校验：直接查 sys_config 表，比对 config_value 与程序版本
+        /// config_key = 'APP_VERSION'，config_value 存放数据库要求的最低版本号
+        /// 当 程序版本 &lt; 数据库版本 时拦截，不让用户使用
+        /// </summary>
+        /// <returns>true=通过, false=拦截</returns>
+        private bool CheckVersion()
+        {
+            try
+            {
+                using var db = DbHelper.GetInstance();
+                // 直接查 sys_config 一行数据
+                string requiredVersion = db.Ado.GetString(
+                    "SELECT config_value FROM sys_config WHERE config_key = @key LIMIT 1",
+                    new { key = "APP_VERSION" });
+
+                // 数据库没配置版本信息，放行
+                if (string.IsNullOrWhiteSpace(requiredVersion))
+                    return true;
+
+                // 比对版本号
+                if (CompareVersion(APP_VERSION, requiredVersion.Trim()) < 0)
+                {
+                    UIMessageBox.Show(
+                        $"当前程序版本过旧，已被禁止使用！\n\n" +
+                        $"当前版本：{APP_VERSION}\n" +
+                        $"要求版本：{requiredVersion}\n\n" +
+                        $"请联系管理员获取最新版本后再使用。",
+                        "版本过期 - 禁止访问",
+                        UIStyle.Red,
+                        UIMessageBoxButtons.OK);
+
+                    // 如果是构造阶段调用，用 Load 延迟关闭
+                    if (!this.IsHandleCreated)
+                        this.Load += (s, e) => this.Close();
+
+                    return false;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                UIMessageBox.Show(
+                    $"版本校验失败，无法连接数据库！\n\n错误：{ex.Message}",
+                    "版本校验异常",
+                    UIStyle.Red,
+                    UIMessageBoxButtons.OK);
+
+                if (!this.IsHandleCreated)
+                    this.Load += (s, e) => this.Close();
+
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 版本号比较 (如 "1.0.0" vs "1.1.0")
+        /// </summary>
+        /// <returns>-1: v1 小于 v2, 0: 相等, 1: v1 大于 v2</returns>
+        private static int CompareVersion(string v1, string v2)
+        {
+            var p1 = v1.Split('.');
+            var p2 = v2.Split('.');
+            int len = Math.Max(p1.Length, p2.Length);
+            for (int i = 0; i < len; i++)
+            {
+                int n1 = i < p1.Length ? int.Parse(p1[i]) : 0;
+                int n2 = i < p2.Length ? int.Parse(p2[i]) : 0;
+                if (n1 < n2) return -1;
+                if (n1 > n2) return 1;
+            }
+            return 0;
         }
 
         private void InitializeUI()

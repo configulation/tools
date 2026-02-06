@@ -1,0 +1,29 @@
+[
+  {
+    "Id": "bb90ae5b-fd3a-4efd-8371-538590ca1d3d",
+    "Code": "A01",
+    "Name": "A线-01储位",
+    "Description": null,
+    "IsActive": true,
+    "CreateTime": "2026-02-03T16:45:23.7060699+08:00",
+    "UpdateTime": "2026-02-03T16:45:23.7060945+08:00"
+  },
+  {
+    "Id": "b70b7ea6-4794-41c9-8a05-eb2db04b944e",
+    "Code": "A02",
+    "Name": "A线-02储位",
+    "Description": null,
+    "IsActive": true,
+    "CreateTime": "2026-02-03T16:45:23.7062126+08:00",
+    "UpdateTime": "2026-02-03T16:45:23.7062127+08:00"
+  },
+  {
+    "Id": "17d414fe-d14f-48f4-b85d-22e226b63f1b",
+    "Code": "B01",
+    "Name": "B线-01储位",
+    "Description": null,
+    "IsActive": true,
+    "CreateTime": "2026-02-03T16:45:23.7062134+08:00",
+    "UpdateTime": "2026-02-03T16:45:23.7062134+08:00"
+  }
+]

@@ -1,0 +1,310 @@
+[
+  {
+    "EquipmentId": "EQ-001",
+    "LineLocation": "A线-01",
+    "Category": "生产设备",
+    "SubCategory": "印刷机",
+    "MaintenanceIntervalDays": 30,
+    "NextMaintenanceDate": "2026-02-20T15:59:15.89",
+    "MaintenanceHistory": [],
+    "Status": "正常使用",
+    "OperatorId": "OP001",
+    "MaintenanceItems": [
+      "清洁滚筒",
+      "检查油位",
+      "润滑轴承"
+    ],
+    "Notes": "定期保养",
+    "CreateTime": "2026-01-15T08:00:00",
+    "UpdateTime": "2026-02-03T16:01:41"
+  },
+  {
+    "EquipmentId": "EQ-002",
+    "LineLocation": "A线-02",
+    "Category": "生产设备",
+    "SubCategory": "注塑机",
+    "MaintenanceIntervalDays": 30,
+    "NextMaintenanceDate": "2026-03-06T10:49:48.3408194+08:00",
+    "MaintenanceHistory": [
+      {
+        "RecordId": "550e6ab1-3fed-402b-9b5e-398d74fc96d1",
+        "TargetId": "EQ-002",
+        "TargetType": "Equipment",
+        "MaintenanceTime": "2026-02-04T10:48:48.7829064+08:00",
+        "Operator": "cqy",
+        "MaintenanceItems": "检查磨损, 检查压力表, 检查液压系统",
+        "Result": "正常",
+        "Notes": "",
+        "NextMaintenanceDate": "2026-03-21T10:48:48.7829066+08:00"
+      },
+      {
+        "RecordId": "becc1fb6-79cd-4a49-8e52-0e86e42895dd",
+        "TargetId": "EQ-002",
+        "TargetType": "Equipment",
+        "MaintenanceTime": "2026-02-04T10:49:48.3408194+08:00",
+        "Operator": "cqy1",
+        "MaintenanceItems": "更换空气滤芯, 检查磨损, 检查压力表, 检查液压系统, 排放冷凝水, 清洁",
+        "Result": "正常",
+        "Notes": "",
+        "NextMaintenanceDate": "2026-03-06T10:49:48.3408194+08:00"
+      }
+    ],
+    "Status": "正常使用",
+    "OperatorId": "OP002",
+    "MaintenanceItems": [
+      "检查液压系统",
+      "清洁模具",
+      "更换滤芯"
+    ],
+    "Notes": "重点设备",
+    "CreateTime": "2026-01-10T09:30:00",
+    "UpdateTime": "2026-02-04T10:49:48.3416349+08:00"
+  },
+  {
+    "EquipmentId": "EQ-003",
+    "LineLocation": "B线-01",
+    "Category": "检测设备",
+    "SubCategory": "X光检测仪",
+    "MaintenanceIntervalDays": 60,
+    "NextMaintenanceDate": "2026-03-15T08:00:00",
+    "MaintenanceHistory": [],
+    "Status": "正常使用",
+    "OperatorId": "OP003",
+    "MaintenanceItems": [
+      "校准设备",
+      "清洁探头",
+      "检查电路"
+    ],
+    "Notes": "精密设备",
+    "CreateTime": "2026-01-05T10:00:00",
+    "UpdateTime": "2026-01-28T11:15:00"
+  },
+  {
+    "EquipmentId": "EQ-004",
+    "LineLocation": "B线-02",
+    "Category": "生产设备",
+    "SubCategory": "冲压机",
+    "MaintenanceIntervalDays": 30,
+    "NextMaintenanceDate": "2026-02-18T09:00:00",
+    "MaintenanceHistory": [],
+    "Status": "正常使用",
+    "OperatorId": "OP001",
+    "MaintenanceItems": [
+      "检查模具磨损",
+      "润滑导轨",
+      "清理废料"
+    ],
+    "Notes": "高频使用",
+    "CreateTime": "2026-01-12T08:30:00",
+    "UpdateTime": "2026-02-02T09:45:00"
+  },
+  {
+    "EquipmentId": "EQ-005",
+    "LineLocation": "C线-01",
+    "Category": "包装设备",
+    "SubCategory": "自动包装机",
+    "MaintenanceIntervalDays": 30,
+    "NextMaintenanceDate": "2026-02-25T14:00:00",
+    "MaintenanceHistory": [],
+    "Status": "正常使用",
+    "OperatorId": "OP004",
+    "MaintenanceItems": [
+      "检查传送带",
+      "清洁封口装置",
+      "校准重量传感器"
+    ],
+    "Notes": "末端设备",
+    "CreateTime": "2026-01-20T13:00:00",
+    "UpdateTime": "2026-02-03T10:30:00"
+  },
+  {
+    "EquipmentId": "EQ-006",
+    "LineLocation": "C线-02",
+    "Category": "辅助设备",
+    "SubCategory": "空压机",
+    "MaintenanceIntervalDays": 90,
+    "NextMaintenanceDate": "2026-04-10T08:00:00",
+    "MaintenanceHistory": [],
+    "Status": "正常使用",
+    "OperatorId": "OP005",
+    "MaintenanceItems": [
+      "更换空气滤芯",
+      "检查压力表",
+      "排放冷凝水"
+    ],
+    "Notes": "公用设备",
+    "CreateTime": "2026-01-08T07:00:00",
+    "UpdateTime": "2026-01-25T16:00:00"
+  },
+  {
+    "EquipmentId": "EQ-007",
+    "LineLocation": "D线-01",
+    "Category": "生产设备",
+    "SubCategory": "焊接机",
+    "MaintenanceIntervalDays": 30,
+    "NextMaintenanceDate": "2026-02-22T10:00:00",
+    "MaintenanceHistory": [],
+    "Status": "正常使用",
+    "OperatorId": "OP002",
+    "MaintenanceItems": [
+      "检查焊枪",
+      "清理焊渣",
+      "更换保护气体"
+    ],
+    "Notes": "特种作业设备",
+    "CreateTime": "2026-01-18T09:00:00",
+    "UpdateTime": "2026-02-01T15:30:00"
+  },
+  {
+    "EquipmentId": "EQ-008",
+    "LineLocation": "D线-02",
+    "Category": "检测设备",
+    "SubCategory": "三坐标测量仪",
+    "MaintenanceIntervalDays": 60,
+    "NextMaintenanceDate": "2026-03-20T08:30:00",
+    "MaintenanceHistory": [],
+    "Status": "正常使用",
+    "OperatorId": "OP003",
+    "MaintenanceItems": [
+      "校准精度",
+      "清洁测头",
+      "检查气源"
+    ],
+    "Notes": "高精度设备",
+    "CreateTime": "2026-01-06T10:30:00",
+    "UpdateTime": "2026-01-30T14:00:00"
+  },
+  {
+    "EquipmentId": "EQ-009",
+    "LineLocation": "E线-01",
+    "Category": "生产设备",
+    "SubCategory": "数控车床",
+    "MaintenanceIntervalDays": 45,
+    "NextMaintenanceDate": "2026-03-08T09:00:00",
+    "MaintenanceHistory": [],
+    "Status": "正常使用",
+    "OperatorId": "OP001",
+    "MaintenanceItems": [
+      "检查刀具磨损",
+      "润滑导轨",
+      "清理切屑"
+    ],
+    "Notes": "精密加工设备",
+    "CreateTime": "2026-01-14T08:00:00",
+    "UpdateTime": "2026-02-02T11:20:00"
+  },
+  {
+    "EquipmentId": "EQ-010",
+    "LineLocation": "E线-02",
+    "Category": "生产设备",
+    "SubCategory": "铣床",
+    "MaintenanceIntervalDays": 45,
+    "NextMaintenanceDate": "2026-03-10T10:00:00",
+    "MaintenanceHistory": [],
+    "Status": "正常使用",
+    "OperatorId": "OP002",
+    "MaintenanceItems": [
+      "检查主轴",
+      "润滑系统",
+      "清洁工作台"
+    ],
+    "Notes": "常用设备",
+    "CreateTime": "2026-01-16T09:30:00",
+    "UpdateTime": "2026-02-03T08:45:00"
+  },
+  {
+    "EquipmentId": "EQ-011",
+    "LineLocation": "F线-01",
+    "Category": "辅助设备",
+    "SubCategory": "冷却塔",
+    "MaintenanceIntervalDays": 90,
+    "NextMaintenanceDate": "2026-04-15T08:00:00",
+    "MaintenanceHistory": [],
+    "Status": "正常使用",
+    "OperatorId": "OP005",
+    "MaintenanceItems": [
+      "清洗填料",
+      "检查水泵",
+      "清理水垢"
+    ],
+    "Notes": "冷却系统",
+    "CreateTime": "2026-01-07T07:30:00",
+    "UpdateTime": "2026-01-26T15:00:00"
+  },
+  {
+    "EquipmentId": "EQ-012",
+    "LineLocation": "F线-02",
+    "Category": "生产设备",
+    "SubCategory": "激光切割机",
+    "MaintenanceIntervalDays": 30,
+    "NextMaintenanceDate": "2026-02-28T09:00:00",
+    "MaintenanceHistory": [],
+    "Status": "正常使用",
+    "OperatorId": "OP004",
+    "MaintenanceItems": [
+      "清洁镜片",
+      "检查激光功率",
+      "校准光路"
+    ],
+    "Notes": "高价值设备",
+    "CreateTime": "2026-01-22T10:00:00",
+    "UpdateTime": "2026-02-03T13:15:00"
+  },
+  {
+    "EquipmentId": "EQ-013",
+    "LineLocation": "G线-01",
+    "Category": "检测设备",
+    "SubCategory": "硬度计",
+    "MaintenanceIntervalDays": 60,
+    "NextMaintenanceDate": "2026-03-25T08:00:00",
+    "MaintenanceHistory": [],
+    "Status": "正常使用",
+    "OperatorId": "OP003",
+    "MaintenanceItems": [
+      "校准标准块",
+      "清洁压头",
+      "检查加载系统"
+    ],
+    "Notes": "质检设备",
+    "CreateTime": "2026-01-09T11:00:00",
+    "UpdateTime": "2026-01-29T10:30:00"
+  },
+  {
+    "EquipmentId": "EQ-014",
+    "LineLocation": "G线-02",
+    "Category": "生产设备",
+    "SubCategory": "磨床",
+    "MaintenanceIntervalDays": 45,
+    "NextMaintenanceDate": "2026-03-12T09:30:00",
+    "MaintenanceHistory": [],
+    "Status": "正常使用",
+    "OperatorId": "OP001",
+    "MaintenanceItems": [
+      "修整砂轮",
+      "检查冷却液",
+      "清理磁盘"
+    ],
+    "Notes": "精加工设备",
+    "CreateTime": "2026-01-17T08:30:00",
+    "UpdateTime": "2026-02-02T14:00:00"
+  },
+  {
+    "EquipmentId": "EQ-015",
+    "LineLocation": "H线-01",
+    "Category": "包装设备",
+    "SubCategory": "贴标机",
+    "MaintenanceIntervalDays": 30,
+    "NextMaintenanceDate": "2026-02-27T14:00:00",
+    "MaintenanceHistory": [],
+    "Status": "正常使用",
+    "OperatorId": "OP004",
+    "MaintenanceItems": [
+      "清洁贴标头",
+      "检查传感器",
+      "调整标签位置"
+    ],
+    "Notes": "包装线设备",
+    "CreateTime": "2026-01-21T13:30:00",
+    "UpdateTime": "2026-02-03T11:00:00"
+  }
+]

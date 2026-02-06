@@ -1,0 +1,74 @@
+[
+  {
+    "Id": "58303ad9-80a7-4c9c-a29b-8d69dab30b03",
+    "Code": "EQ01",
+    "Name": "生产设备",
+    "Type": "设备",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T16:45:23.7222375+08:00",
+    "UpdateTime": "2026-02-03T16:45:23.7222801+08:00"
+  },
+  {
+    "Id": "990cf8f8-a9fb-4728-9ae2-2b4c0779d307",
+    "Code": "EQ02",
+    "Name": "检测设备",
+    "Type": "设备",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T16:45:23.7223361+08:00",
+    "UpdateTime": "2026-02-03T16:45:23.7223363+08:00"
+  },
+  {
+    "Id": "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+    "Code": "EQ03",
+    "Name": "包装设备",
+    "Type": "设备",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T16:45:23.7223370+08:00",
+    "UpdateTime": "2026-02-03T16:45:23.7223371+08:00"
+  },
+  {
+    "Id": "b2c3d4e5-f6a7-4b5c-9d0e-1f2a3b4c5d6e",
+    "Code": "EQ04",
+    "Name": "辅助设备",
+    "Type": "设备",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T16:45:23.7223380+08:00",
+    "UpdateTime": "2026-02-03T16:45:23.7223381+08:00"
+  },
+  {
+    "Id": "ef182aed-ccd7-4696-9434-6ef66e00b66d",
+    "Code": "TL01",
+    "Name": "切削工具",
+    "Type": "工装",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T16:45:23.7223388+08:00",
+    "UpdateTime": "2026-02-03T16:45:23.7223388+08:00"
+  },
+  {
+    "Id": "58033f82-11da-434a-ab24-2ef588c39451",
+    "Code": "TL02",
+    "Name": "测量工具",
+    "Type": "工装",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T16:45:23.7223394+08:00",
+    "UpdateTime": "2026-02-03T16:45:23.7223395+08:00"
+  },
+  {
+    "Id": "c3d4e5f6-a7b8-4c5d-0e1f-2a3b4c5d6e7f",
+    "Code": "TL03",
+    "Name": "夹具",
+    "Type": "工装",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T16:45:23.7223400+08:00",
+    "UpdateTime": "2026-02-03T16:45:23.7223401+08:00"
+  },
+  {
+    "Id": "d4e5f6a7-b8c9-4d5e-1f2a-3b4c5d6e7f8a",
+    "Code": "TL04",
+    "Name": "焊接工具",
+    "Type": "工装",
+    "IsActive": true,
+    "CreateTime": "2026-02-03T16:45:23.7223406+08:00",
+    "UpdateTime": "2026-02-03T16:45:23.7223407+08:00"
+  }
+]

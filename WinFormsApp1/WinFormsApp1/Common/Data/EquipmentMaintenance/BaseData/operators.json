@@ -1,0 +1,22 @@
+[
+  {
+    "Id": "14f32f9e-f2ba-40db-adf0-d538553f49ed",
+    "Code": "OP001",
+    "Name": "张三",
+    "Department": "生产部",
+    "Phone": null,
+    "IsActive": true,
+    "CreateTime": "2026-02-03T16:45:23.7282253+08:00",
+    "UpdateTime": "2026-02-03T16:45:23.7282528+08:00"
+  },
+  {
+    "Id": "3c9df107-498a-4ac1-bb3d-f3ed55fcc7b6",
+    "Code": "OP002",
+    "Name": "李四",
+    "Department": "生产部",
+    "Phone": null,
+    "IsActive": true,
+    "CreateTime": "2026-02-03T16:45:23.7282761+08:00",
+    "UpdateTime": "2026-02-03T16:45:23.7282761+08:00"
+  }
+]

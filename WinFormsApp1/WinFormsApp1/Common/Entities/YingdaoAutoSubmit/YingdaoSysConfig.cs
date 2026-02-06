@@ -1,6 +1,7 @@
 using SqlSugar;
+using System;
 
-namespace WinFormsApp1.Common.Database.Entities
+namespace WinFormsApp1.Common.Entities.YingdaoAutoSubmit
 {
     [SugarTable("sys_config")]
     public class YingdaoSysConfig

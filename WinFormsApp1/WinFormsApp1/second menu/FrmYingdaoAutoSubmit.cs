@@ -8,6 +8,7 @@ using Microsoft.Web.WebView2.Core;
 using Newtonsoft.Json;
 using Sunny.UI;
 using WinFormsApp1.Common.Database.Services;
+using WinFormsApp1.Common.Entities.YingdaoAutoSubmit;
 
 namespace WinFormsApp1.second_menu
 {

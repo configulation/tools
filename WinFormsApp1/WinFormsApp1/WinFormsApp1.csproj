@@ -10,12 +10,17 @@
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ApplicationIcon>AnyConv.com__生成 C# WinForm 图标.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="file\Chess-Chess\**" />
     <EmbeddedResource Remove="file\Chess-Chess\**" />
     <None Remove="file\Chess-Chess\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="AnyConv.com__生成 C# WinForm 图标.ico" />
   </ItemGroup>
 
   <ItemGroup>

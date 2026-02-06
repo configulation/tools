@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using WinFormsApp1.Common.Database.Entities;
+using WinFormsApp1.Common.Entities.YingdaoAutoSubmit;
 using Newtonsoft.Json;
 using SqlSugar;
 

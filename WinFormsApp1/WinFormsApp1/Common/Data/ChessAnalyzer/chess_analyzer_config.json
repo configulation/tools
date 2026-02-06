@@ -1,0 +1,19 @@
+{
+  "EnginePath": "engine/Pikafish.2025-10-27/Windows/pikafish-avx2.exe",
+  "NnuePath": "engine/Pikafish.2025-10-27/pikafish.nnue",
+  "SearchDepth": 18,
+  "ScanInterval": 2000,
+  "EngineThreads": 4,
+  "EngineHashSize": 256,
+  "OverlayWindowPosition": {
+    "X": 100,
+    "Y": 100
+  },
+  "AutoStartOverlay": true,
+  "LastSelectedArea": {
+    "X": 0,
+    "Y": 0,
+    "Width": 0,
+    "Height": 0
+  }
+}

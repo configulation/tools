@@ -1,94 +1,196 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using Newtonsoft.Json;
 using WinFormsApp1.EquipmentMaintenanceSystem.Models;
-using WinFormsApp1.Common;
+using WinFormsApp1.Common.Database.Services;
+using WinFormsApp1.Common.Entities.EquipmentMaintenance;
 using NPOI.XSSF.UserModel;
 using NPOI.SS.UserModel;
+using System.IO;
+using WinFormsApp1.Common.Database;
 
 namespace WinFormsApp1.EquipmentMaintenanceSystem.Services
 {
     /// <summary>
-    /// JSON数据操作服务
+    /// 数据库操作服务(使用SqlSugar)
     /// </summary>
     public class DataService
     {
-        private readonly string _dataFolder;
-        private readonly string _equipmentFile;
-        private readonly string _toolFile;
-        private readonly string _recordFile;
-
         public DataService()
         {
-            _dataFolder = PathHelper.EquipmentMaintenanceDataFolder;
-            _equipmentFile = Path.Combine(_dataFolder, "equipment.json");
-            _toolFile = Path.Combine(_dataFolder, "tools.json");
-            _recordFile = Path.Combine(_dataFolder, "maintenance_records.json");
-
-            PathHelper.EnsureDirectoryExists(_dataFolder);
         }
 
         #region 设备数据操作
 
         public List<Equipment> LoadEquipments()
         {
-            if (!File.Exists(_equipmentFile))
-                return new List<Equipment>();
-
-            var json = File.ReadAllText(_equipmentFile);
-            return JsonConvert.DeserializeObject<List<Equipment>>(json) ?? new List<Equipment>();
+            using var db = DbHelper.GetInstance();
+            var entities = db.Queryable<EquipmentEntity>().ToList();
+            
+            return entities.Select(e => new Equipment
+            {
+                EquipmentId = e.EquipmentId,
+                LineLocation = e.LineLocation,
+                Category = e.Category,
+                SubCategory = e.SubCategory,
+                MaintenanceIntervalDays = e.MaintenanceIntervalDays,
+                NextMaintenanceDate = e.NextMaintenanceDate,
+                Status = e.Status,
+                OperatorId = e.OperatorId,
+                Notes = e.Notes,
+                CreateTime = e.CreateTime,
+                UpdateTime = e.UpdateTime,
+                MaintenanceItems = GetMaintenanceItems(e.EquipmentId, "Equipment")
+            }).ToList();
         }
 
         public void SaveEquipments(List<Equipment> equipments)
         {
-            var json = JsonConvert.SerializeObject(equipments, Formatting.Indented);
-            File.WriteAllText(_equipmentFile, json);
+            using var db = DbHelper.GetInstance();
+            db.BeginTran();
+            try
+            {
+                db.Deleteable<EquipmentEntity>().ExecuteCommand();
+                
+                var entities = equipments.Select(e => new EquipmentEntity
+                {
+                    EquipmentId = e.EquipmentId,
+                    LineLocation = e.LineLocation,
+                    Category = e.Category,
+                    SubCategory = e.SubCategory,
+                    MaintenanceIntervalDays = e.MaintenanceIntervalDays,
+                    NextMaintenanceDate = e.NextMaintenanceDate,
+                    Status = e.Status,
+                    OperatorId = e.OperatorId,
+                    Notes = e.Notes,
+                    CreateTime = e.CreateTime,
+                    UpdateTime = e.UpdateTime
+                }).ToList();
+                
+                if (entities.Count > 0)
+                {
+                    db.Insertable(entities).ExecuteCommand();
+                }
+                
+                db.CommitTran();
+            }
+            catch
+            {
+                db.RollbackTran();
+                throw;
+            }
         }
 
         public bool AddEquipment(Equipment equipment)
         {
-            var equipments = LoadEquipments();
-            if (equipments.Any(e => e.EquipmentId == equipment.EquipmentId))
-                return false;
+            using var db = DbHelper.GetInstance();
+            
+            var exists = db.Queryable<EquipmentEntity>()
+                .Where(e => e.EquipmentId == equipment.EquipmentId)
+                .Any();
+            
+            if (exists) return false;
 
             equipment.CreateTime = DateTime.Now;
             equipment.UpdateTime = DateTime.Now;
-            equipments.Add(equipment);
-            SaveEquipments(equipments);
+            
+            var entity = new EquipmentEntity
+            {
+                EquipmentId = equipment.EquipmentId,
+                LineLocation = equipment.LineLocation,
+                Category = equipment.Category,
+                SubCategory = equipment.SubCategory,
+                MaintenanceIntervalDays = equipment.MaintenanceIntervalDays,
+                NextMaintenanceDate = equipment.NextMaintenanceDate,
+                Status = equipment.Status,
+                OperatorId = equipment.OperatorId,
+                Notes = equipment.Notes,
+                CreateTime = equipment.CreateTime,
+                UpdateTime = equipment.UpdateTime
+            };
+            
+            db.Insertable(entity).ExecuteCommand();
+            SaveMaintenanceItems(equipment.EquipmentId, "Equipment", equipment.MaintenanceItems);
+            
             return true;
         }
 
         public bool UpdateEquipment(Equipment equipment)
         {
-            var equipments = LoadEquipments();
-            var index = equipments.FindIndex(e => e.EquipmentId == equipment.EquipmentId);
-            if (index == -1)
-                return false;
+            using var db = DbHelper.GetInstance();
+            
+            var entity = db.Queryable<EquipmentEntity>()
+                .Where(e => e.EquipmentId == equipment.EquipmentId)
+                .First();
+            
+            if (entity == null) return false;
 
             equipment.UpdateTime = DateTime.Now;
-            equipments[index] = equipment;
-            SaveEquipments(equipments);
+            
+            entity.LineLocation = equipment.LineLocation;
+            entity.Category = equipment.Category;
+            entity.SubCategory = equipment.SubCategory;
+            entity.MaintenanceIntervalDays = equipment.MaintenanceIntervalDays;
+            entity.NextMaintenanceDate = equipment.NextMaintenanceDate;
+            entity.Status = equipment.Status;
+            entity.OperatorId = equipment.OperatorId;
+            entity.Notes = equipment.Notes;
+            entity.UpdateTime = equipment.UpdateTime;
+            
+            db.Updateable(entity).ExecuteCommand();
+            SaveMaintenanceItems(equipment.EquipmentId, "Equipment", equipment.MaintenanceItems);
+            
             return true;
         }
 
         public bool DeleteEquipment(string equipmentId)
         {
-            var equipments = LoadEquipments();
-            var removed = equipments.RemoveAll(e => e.EquipmentId == equipmentId);
-            if (removed > 0)
+            using var db = DbHelper.GetInstance();
+            db.BeginTran();
+            try
             {
-                SaveEquipments(equipments);
+                db.Deleteable<EquipmentEntity>()
+                    .Where(e => e.EquipmentId == equipmentId)
+                    .ExecuteCommand();
+                
+                db.Deleteable<MaintenanceItemEntity>()
+                    .Where(m => m.TargetId == equipmentId && m.TargetType == "Equipment")
+                    .ExecuteCommand();
+                
+                db.CommitTran();
                 return true;
             }
-            return false;
+            catch
+            {
+                db.RollbackTran();
+                return false;
+            }
         }
 
         public Equipment GetEquipment(string equipmentId)
         {
-            var equipments = LoadEquipments();
-            return equipments.FirstOrDefault(e => e.EquipmentId == equipmentId);
+            using var db = DbHelper.GetInstance();
+            var entity = db.Queryable<EquipmentEntity>()
+                .Where(e => e.EquipmentId == equipmentId)
+                .First();
+            
+            if (entity == null) return null;
+            
+            return new Equipment
+            {
+                EquipmentId = entity.EquipmentId,
+                LineLocation = entity.LineLocation,
+                Category = entity.Category,
+                SubCategory = entity.SubCategory,
+                MaintenanceIntervalDays = entity.MaintenanceIntervalDays,
+                NextMaintenanceDate = entity.NextMaintenanceDate,
+                Status = entity.Status,
+                OperatorId = entity.OperatorId,
+                Notes = entity.Notes,
+                CreateTime = entity.CreateTime,
+                UpdateTime = entity.UpdateTime,
+                MaintenanceItems = GetMaintenanceItems(equipmentId, "Equipment")
+            };
         }
 
         #endregion
@@ -97,61 +199,208 @@ namespace WinFormsApp1.EquipmentMaintenanceSystem.Services
 
         public List<Tool> LoadTools()
         {
-            if (!File.Exists(_toolFile))
-                return new List<Tool>();
-
-            var json = File.ReadAllText(_toolFile);
-            return JsonConvert.DeserializeObject<List<Tool>>(json) ?? new List<Tool>();
+            using var db = DbHelper.GetInstance();
+            var entities = db.Queryable<ToolEntity>().ToList();
+            
+            return entities.Select(t => new Tool
+            {
+                ToolCode = t.ToolCode,
+                LineLocation = t.LineLocation,
+                Category = t.Category,
+                SubCategory = t.SubCategory,
+                WorkOrder = t.WorkOrder,
+                OrderQuantity = t.OrderQuantity,
+                PanelQuantity = t.PanelQuantity,
+                ScraperCount = t.ScraperCount,
+                UsageCount = t.UsageCount,
+                TotalUsage = t.TotalUsage,
+                MaintenanceInterval = t.MaintenanceInterval,
+                NextMaintenanceDate = t.NextMaintenanceDate,
+                IssueTime = t.IssueTime,
+                ReturnTime = t.ReturnTime,
+                Status = t.Status,
+                Notes = t.Notes,
+                CreateTime = t.CreateTime,
+                UpdateTime = t.UpdateTime,
+                MaintenanceItems = GetMaintenanceItems(t.ToolCode, "Tool")
+            }).ToList();
         }
 
         public void SaveTools(List<Tool> tools)
         {
-            var json = JsonConvert.SerializeObject(tools, Formatting.Indented);
-            File.WriteAllText(_toolFile, json);
+            using var db = DbHelper.GetInstance();
+            db.BeginTran();
+            try
+            {
+                db.Deleteable<ToolEntity>().ExecuteCommand();
+                
+                var entities = tools.Select(t => new ToolEntity
+                {
+                    ToolCode = t.ToolCode,
+                    LineLocation = t.LineLocation,
+                    Category = t.Category,
+                    SubCategory = t.SubCategory,
+                    WorkOrder = t.WorkOrder,
+                    OrderQuantity = t.OrderQuantity,
+                    PanelQuantity = t.PanelQuantity,
+                    ScraperCount = t.ScraperCount,
+                    UsageCount = t.UsageCount,
+                    TotalUsage = t.TotalUsage,
+                    MaintenanceInterval = t.MaintenanceInterval,
+                    NextMaintenanceDate = t.NextMaintenanceDate,
+                    IssueTime = t.IssueTime,
+                    ReturnTime = t.ReturnTime,
+                    Status = t.Status,
+                    Notes = t.Notes,
+                    CreateTime = t.CreateTime,
+                    UpdateTime = t.UpdateTime
+                }).ToList();
+                
+                if (entities.Count > 0)
+                {
+                    db.Insertable(entities).ExecuteCommand();
+                }
+                
+                db.CommitTran();
+            }
+            catch
+            {
+                db.RollbackTran();
+                throw;
+            }
         }
 
         public bool AddTool(Tool tool)
         {
-            var tools = LoadTools();
-            if (tools.Any(t => t.ToolCode == tool.ToolCode))
-                return false;
+            using var db = DbHelper.GetInstance();
+            
+            var exists = db.Queryable<ToolEntity>()
+                .Where(t => t.ToolCode == tool.ToolCode)
+                .Any();
+            
+            if (exists) return false;
 
             tool.CreateTime = DateTime.Now;
             tool.UpdateTime = DateTime.Now;
-            tools.Add(tool);
-            SaveTools(tools);
+            
+            var entity = new ToolEntity
+            {
+                ToolCode = tool.ToolCode,
+                LineLocation = tool.LineLocation,
+                Category = tool.Category,
+                SubCategory = tool.SubCategory,
+                WorkOrder = tool.WorkOrder,
+                OrderQuantity = tool.OrderQuantity,
+                PanelQuantity = tool.PanelQuantity,
+                ScraperCount = tool.ScraperCount,
+                UsageCount = tool.UsageCount,
+                TotalUsage = tool.TotalUsage,
+                MaintenanceInterval = tool.MaintenanceInterval,
+                NextMaintenanceDate = tool.NextMaintenanceDate,
+                IssueTime = tool.IssueTime,
+                ReturnTime = tool.ReturnTime,
+                Status = tool.Status,
+                Notes = tool.Notes,
+                CreateTime = tool.CreateTime,
+                UpdateTime = tool.UpdateTime
+            };
+            
+            db.Insertable(entity).ExecuteCommand();
+            SaveMaintenanceItems(tool.ToolCode, "Tool", tool.MaintenanceItems);
+            
             return true;
         }
 
         public bool UpdateTool(Tool tool)
         {
-            var tools = LoadTools();
-            var index = tools.FindIndex(t => t.ToolCode == tool.ToolCode);
-            if (index == -1)
-                return false;
+            using var db = DbHelper.GetInstance();
+            
+            var entity = db.Queryable<ToolEntity>()
+                .Where(t => t.ToolCode == tool.ToolCode)
+                .First();
+            
+            if (entity == null) return false;
 
             tool.UpdateTime = DateTime.Now;
-            tools[index] = tool;
-            SaveTools(tools);
+            
+            entity.LineLocation = tool.LineLocation;
+            entity.Category = tool.Category;
+            entity.SubCategory = tool.SubCategory;
+            entity.WorkOrder = tool.WorkOrder;
+            entity.OrderQuantity = tool.OrderQuantity;
+            entity.PanelQuantity = tool.PanelQuantity;
+            entity.ScraperCount = tool.ScraperCount;
+            entity.UsageCount = tool.UsageCount;
+            entity.TotalUsage = tool.TotalUsage;
+            entity.MaintenanceInterval = tool.MaintenanceInterval;
+            entity.NextMaintenanceDate = tool.NextMaintenanceDate;
+            entity.IssueTime = tool.IssueTime;
+            entity.ReturnTime = tool.ReturnTime;
+            entity.Status = tool.Status;
+            entity.Notes = tool.Notes;
+            entity.UpdateTime = tool.UpdateTime;
+            
+            db.Updateable(entity).ExecuteCommand();
+            SaveMaintenanceItems(tool.ToolCode, "Tool", tool.MaintenanceItems);
+            
             return true;
         }
 
         public bool DeleteTool(string toolCode)
         {
-            var tools = LoadTools();
-            var removed = tools.RemoveAll(t => t.ToolCode == toolCode);
-            if (removed > 0)
+            using var db = DbHelper.GetInstance();
+            db.BeginTran();
+            try
             {
-                SaveTools(tools);
+                db.Deleteable<ToolEntity>()
+                    .Where(t => t.ToolCode == toolCode)
+                    .ExecuteCommand();
+                
+                db.Deleteable<MaintenanceItemEntity>()
+                    .Where(m => m.TargetId == toolCode && m.TargetType == "Tool")
+                    .ExecuteCommand();
+                
+                db.CommitTran();
                 return true;
             }
-            return false;
+            catch
+            {
+                db.RollbackTran();
+                return false;
+            }
         }
 
         public Tool GetTool(string toolCode)
         {
-            var tools = LoadTools();
-            return tools.FirstOrDefault(t => t.ToolCode == toolCode);
+            using var db = DbHelper.GetInstance();
+            var entity = db.Queryable<ToolEntity>()
+                .Where(t => t.ToolCode == toolCode)
+                .First();
+            
+            if (entity == null) return null;
+            
+            return new Tool
+            {
+                ToolCode = entity.ToolCode,
+                LineLocation = entity.LineLocation,
+                Category = entity.Category,
+                SubCategory = entity.SubCategory,
+                WorkOrder = entity.WorkOrder,
+                OrderQuantity = entity.OrderQuantity,
+                PanelQuantity = entity.PanelQuantity,
+                ScraperCount = entity.ScraperCount,
+                UsageCount = entity.UsageCount,
+                TotalUsage = entity.TotalUsage,
+                MaintenanceInterval = entity.MaintenanceInterval,
+                NextMaintenanceDate = entity.NextMaintenanceDate,
+                IssueTime = entity.IssueTime,
+                ReturnTime = entity.ReturnTime,
+                Status = entity.Status,
+                Notes = entity.Notes,
+                CreateTime = entity.CreateTime,
+                UpdateTime = entity.UpdateTime,
+                MaintenanceItems = GetMaintenanceItems(toolCode, "Tool")
+            };
         }
 
         #endregion
@@ -160,32 +409,142 @@ namespace WinFormsApp1.EquipmentMaintenanceSystem.Services
 
         public List<MaintenanceRecord> LoadRecords()
         {
-            if (!File.Exists(_recordFile))
-                return new List<MaintenanceRecord>();
-
-            var json = File.ReadAllText(_recordFile);
-            return JsonConvert.DeserializeObject<List<MaintenanceRecord>>(json) ?? new List<MaintenanceRecord>();
+            using var db = DbHelper.GetInstance();
+            var entities = db.Queryable<MaintenanceRecordEntity>().ToList();
+            
+            return entities.Select(r => new MaintenanceRecord
+            {
+                RecordId = r.RecordId,
+                TargetId = r.TargetId,
+                TargetType = r.TargetType,
+                MaintenanceTime = r.MaintenanceTime,
+                Operator = r.Operator,
+                MaintenanceItems = r.MaintenanceItems,
+                Result = r.Result,
+                Notes = r.Notes,
+                NextMaintenanceDate = r.NextMaintenanceDate
+            }).ToList();
         }
 
         public void SaveRecords(List<MaintenanceRecord> records)
         {
-            var json = JsonConvert.SerializeObject(records, Formatting.Indented);
-            File.WriteAllText(_recordFile, json);
+            using var db = DbHelper.GetInstance();
+            db.BeginTran();
+            try
+            {
+                db.Deleteable<MaintenanceRecordEntity>().ExecuteCommand();
+                
+                var entities = records.Select(r => new MaintenanceRecordEntity
+                {
+                    RecordId = r.RecordId,
+                    TargetId = r.TargetId,
+                    TargetType = r.TargetType,
+                    MaintenanceTime = r.MaintenanceTime,
+                    Operator = r.Operator,
+                    MaintenanceItems = r.MaintenanceItems,
+                    Result = r.Result,
+                    Notes = r.Notes,
+                    NextMaintenanceDate = r.NextMaintenanceDate
+                }).ToList();
+                
+                if (entities.Count > 0)
+                {
+                    db.Insertable(entities).ExecuteCommand();
+                }
+                
+                db.CommitTran();
+            }
+            catch
+            {
+                db.RollbackTran();
+                throw;
+            }
         }
 
         public void AddRecord(MaintenanceRecord record)
         {
-            var records = LoadRecords();
-            records.Add(record);
-            SaveRecords(records);
+            using var db = DbHelper.GetInstance();
+            
+            var entity = new MaintenanceRecordEntity
+            {
+                RecordId = record.RecordId,
+                TargetId = record.TargetId,
+                TargetType = record.TargetType,
+                MaintenanceTime = record.MaintenanceTime,
+                Operator = record.Operator,
+                MaintenanceItems = record.MaintenanceItems,
+                Result = record.Result,
+                Notes = record.Notes,
+                NextMaintenanceDate = record.NextMaintenanceDate
+            };
+            
+            db.Insertable(entity).ExecuteCommand();
         }
 
         public List<MaintenanceRecord> GetRecordsByTarget(string targetId, string targetType)
         {
-            var records = LoadRecords();
-            return records.Where(r => r.TargetId == targetId && r.TargetType == targetType)
-                         .OrderByDescending(r => r.MaintenanceTime)
-                         .ToList();
+            using var db = DbHelper.GetInstance();
+            var entities = db.Queryable<MaintenanceRecordEntity>()
+                .Where(r => r.TargetId == targetId && r.TargetType == targetType)
+                .OrderBy(r => r.MaintenanceTime, SqlSugar.OrderByType.Desc)
+                .ToList();
+            
+            return entities.Select(r => new MaintenanceRecord
+            {
+                RecordId = r.RecordId,
+                TargetId = r.TargetId,
+                TargetType = r.TargetType,
+                MaintenanceTime = r.MaintenanceTime,
+                Operator = r.Operator,
+                MaintenanceItems = r.MaintenanceItems,
+                Result = r.Result,
+                Notes = r.Notes,
+                NextMaintenanceDate = r.NextMaintenanceDate
+            }).ToList();
+        }
+
+        #endregion
+
+        #region 保养项目辅助方法
+
+        private List<string> GetMaintenanceItems(string targetId, string targetType)
+        {
+            using var db = DbHelper.GetInstance();
+            return db.Queryable<MaintenanceItemEntity>()
+                .Where(m => m.TargetId == targetId && m.TargetType == targetType)
+                .Select(m => m.ItemName)
+                .ToList();
+        }
+
+        private void SaveMaintenanceItems(string targetId, string targetType, List<string> items)
+        {
+            using var db = DbHelper.GetInstance();
+            db.BeginTran();
+            try
+            {
+                db.Deleteable<MaintenanceItemEntity>()
+                    .Where(m => m.TargetId == targetId && m.TargetType == targetType)
+                    .ExecuteCommand();
+                
+                if (items != null && items.Count > 0)
+                {
+                    var entities = items.Select(item => new MaintenanceItemEntity
+                    {
+                        TargetId = targetId,
+                        TargetType = targetType,
+                        ItemName = item
+                    }).ToList();
+                    
+                    db.Insertable(entities).ExecuteCommand();
+                }
+                
+                db.CommitTran();
+            }
+            catch
+            {
+                db.RollbackTran();
+                throw;
+            }
         }
 
         #endregion

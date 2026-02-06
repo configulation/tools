@@ -15,4 +15,4 @@ VALUES ('YINGDAO_USERS', '影刀用户列表', NULL, 'DROPDOWN', 'yingdao', 3, 1
 -- 插入示例用户（可选，根据实际情况修改或删除）
 -- INSERT INTO sys_config_option (config_key, option_value, option_label, sort_order, is_default, is_active, extra_data)
 -- VALUES ('YINGDAO_USERS', '员工号1', '总厂-员工号1', 1, 0, 1, 
---   '{"Enabled":true,"Factory":"总厂","EmployeeId":"员工号1","Phone":"13800138000","CarNo":"粤A12345","LastSubmittedDate":"","LastResult":""}');
+--   '{"Enabled":true,"Factorsys_config_option":"总厂","EmployeeId":"员工号1","Phone":"13800138000","CarNo":"粤A12345","LastSubmittedDate":"","LastResult":""}');
